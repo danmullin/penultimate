@@ -120,8 +120,12 @@ type DocState = {
   setActiveArtboard: (id: string) => void
   addArtboard: () => void
   removeActiveArtboard: () => void
+  removeArtboard: (id: string) => void
+  renameArtboard: (id: string, name: string) => void
   /** Delete objects that intersect the active artboard (undoable). */
   clearActiveArtboard: () => void
+  /** Clear objects on a specific artboard (undoable). */
+  clearArtboard: (id: string) => void
 
   addNode: (node: VecNode) => void
   updateNode: (id: string, patch: Partial<VecNode>, recordHistory?: boolean) => void
@@ -403,30 +407,53 @@ export const useDocStore = create<DocState>((set, get) => ({
   },
 
   removeActiveArtboard: () => {
+    get().removeArtboard(get().doc.activeArtboardId)
+  },
+
+  removeArtboard: (id) => {
     if (get().doc.artboards.length <= 1) return
+    if (!get().doc.artboards.some((a) => a.id === id)) return
     get().pushHistory()
     set((s) => {
-      const artboards = s.doc.artboards.filter((a) => a.id !== s.doc.activeArtboardId)
+      const artboards = s.doc.artboards.filter((a) => a.id !== id)
+      const activeArtboardId =
+        s.doc.activeArtboardId === id ? artboards[0].id : s.doc.activeArtboardId
       return {
         doc: syncArtboardFromActive({
           ...s.doc,
           artboards,
-          activeArtboardId: artboards[0].id,
+          activeArtboardId,
         }),
       }
     })
   },
 
+  renameArtboard: (id, name) => {
+    const trimmed = name.trim()
+    if (!trimmed) return
+    get().pushHistory()
+    set((s) => ({
+      doc: {
+        ...s.doc,
+        artboards: s.doc.artboards.map((a) =>
+          a.id === id ? { ...a, name: trimmed } : a,
+        ),
+      },
+    }))
+  },
+
   clearActiveArtboard: () => {
+    get().clearArtboard(get().doc.activeArtboardId)
+  },
+
+  clearArtboard: (id) => {
     const { doc } = get()
-    const ab =
-      doc.artboards.find((a) => a.id === doc.activeArtboardId) ??
-      doc.artboards[0]
+    const ab = doc.artboards.find((a) => a.id === id)
     if (!ab) return
     const frame = { x: ab.x, y: ab.y, width: ab.width, height: ab.height }
     const toDelete = new Set<string>()
-    for (const id of doc.zOrder) {
-      const n = doc.nodes[id]
+    for (const nid of doc.zOrder) {
+      const n = doc.nodes[nid]
       if (!n) continue
       const box = nodeBBox(n, doc)
       const overlaps =
@@ -435,17 +462,17 @@ export const useDocStore = create<DocState>((set, get) => ({
         box.y < frame.y + frame.height &&
         box.y + box.height > frame.y
       if (!overlaps) continue
-      for (const d of collectDescendants(id, doc)) toDelete.add(d)
+      for (const d of collectDescendants(nid, doc)) toDelete.add(d)
     }
     if (toDelete.size === 0) return
     get().pushHistory()
     const nodes = { ...doc.nodes }
-    for (const id of toDelete) delete nodes[id]
+    for (const delId of toDelete) delete nodes[delId]
     set({
       doc: {
         ...doc,
         nodes,
-        zOrder: doc.zOrder.filter((id) => !toDelete.has(id)),
+        zOrder: doc.zOrder.filter((nid) => !toDelete.has(nid)),
       },
       selectedIds: [],
       guides: [],

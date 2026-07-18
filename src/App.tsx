@@ -1,4 +1,5 @@
 import { Artboard } from './canvas/Artboard'
+import { ArtboardsPanel } from './components/ArtboardsPanel'
 import { ControlBar } from './components/ControlBar'
 import { HelpModal } from './components/HelpModal'
 import { LayersPanel } from './components/LayersPanel'
@@ -32,6 +33,7 @@ export default function App() {
           <Artboard />
         </main>
         <aside className="right-dock">
+          <ArtboardsPanel />
           <LayersPanel />
           <PropertiesPanel />
           <SwatchesPanel />
