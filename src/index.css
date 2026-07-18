@@ -1151,7 +1151,7 @@ select {
 .color-popover {
   position: fixed;
   z-index: 1200;
-  width: 460px;
+  width: 520px;
   padding: 0;
   border: 1px solid color-mix(in srgb, var(--border-strong) 70%, #000 30%);
   border-radius: 8px;
@@ -1181,28 +1181,30 @@ select {
   cursor: grabbing;
 }
 
-/* Photoshop grid:
-   [ SV ][ hue ][ new/current ][ OK / Cancel / Add ]
-   [            ][ HSB | RGB | #                    ] */
+/* Photoshop: spectrum left | (compare + buttons) over fields on the right */
 .color-popover__body {
-  display: grid;
-  grid-template-columns: 200px 18px 3.6rem 7.4rem;
-  grid-template-rows: 200px auto;
-  gap: 0.55rem 0.5rem;
-  padding: 0.65rem;
-  align-items: start;
+  display: flex;
+  gap: 0.65rem;
+  padding: 0.7rem;
+  align-items: stretch;
+}
+
+.color-popover__spectrum {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  align-items: stretch;
 }
 
 .color-popover__sv {
-  grid-column: 1;
-  grid-row: 1;
   position: relative;
-  width: 200px;
-  height: 200px;
+  width: 220px;
+  height: 220px;
   border: 1px solid color-mix(in srgb, #000 50%, var(--border));
   overflow: hidden;
   cursor: crosshair;
   touch-action: none;
+  flex-shrink: 0;
 }
 
 .color-popover__sv-white,
@@ -1232,14 +1234,13 @@ select {
 }
 
 .color-popover__hue {
-  grid-column: 2;
-  grid-row: 1;
   position: relative;
-  width: 18px;
-  height: 200px;
+  width: 20px;
+  height: 220px;
   border: 1px solid color-mix(in srgb, #000 50%, var(--border));
   cursor: ns-resize;
   touch-action: none;
+  flex-shrink: 0;
   background: linear-gradient(
     to bottom,
     #f00,
@@ -1263,30 +1264,43 @@ select {
 }
 
 .color-popover__hue-tri--l {
-  margin-left: -16px;
+  margin-left: -17px;
   border-top: 5px solid transparent;
   border-bottom: 5px solid transparent;
   border-left: 7px solid #fff;
 }
 
 .color-popover__hue-tri--r {
-  margin-left: 9px;
+  margin-left: 10px;
   border-top: 5px solid transparent;
   border-bottom: 5px solid transparent;
   border-right: 7px solid #fff;
 }
 
-.color-popover__compare-stack {
-  grid-column: 3;
-  grid-row: 1;
+.color-popover__main {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  width: 3.6rem;
-  align-self: start;
+  gap: 0.65rem;
+}
+
+.color-popover__main-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.color-popover__compare-stack {
+  display: flex;
+  flex-direction: column;
+  width: 4rem;
+  flex-shrink: 0;
 }
 
 .color-popover__compare-label {
-  padding: 0.1rem 0.15rem;
+  padding: 0.05rem 0;
   font-size: 0.62rem;
   color: var(--muted);
   text-transform: lowercase;
@@ -1294,29 +1308,29 @@ select {
   line-height: 1.2;
 }
 
+.color-popover__compare-swatches {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+}
+
 .color-popover__compare-swatch {
   height: 1.85rem;
-  border: 1px solid var(--border);
   cursor: pointer;
 }
 
-.color-popover__compare-swatch + .color-popover__compare-swatch {
-  border-top: none;
-}
-
 .color-popover__actions {
-  grid-column: 4;
-  grid-row: 1;
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
-  width: 7.4rem;
-  align-self: start;
+  gap: 0.3rem;
+  width: 7.5rem;
+  flex-shrink: 0;
+  margin-left: auto;
 }
 
 .color-popover__btn {
   height: 1.65rem;
-  padding: 0 0.6rem;
+  padding: 0 0.55rem;
   border: 1px solid var(--border-strong);
   border-radius: 999px;
   background: var(--panel-2);
@@ -1337,11 +1351,10 @@ select {
 }
 
 .color-popover__fields {
-  grid-column: 3 / 5;
-  grid-row: 2;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.45rem 0.75rem;
+  column-gap: 1rem;
+  row-gap: 0.55rem;
   align-content: start;
 }
 
@@ -1351,15 +1364,16 @@ select {
   border: none;
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
+  gap: 0.22rem;
 }
 
 .color-popover__field {
   display: grid;
-  grid-template-columns: 0.9rem 1.1rem minmax(0, 3.2rem) 0.7rem;
+  grid-template-columns: 0.85rem 1.05rem minmax(0, 1fr) 0.85rem;
   align-items: center;
-  gap: 0.2rem;
+  column-gap: 0.25rem;
   color: var(--muted);
+  min-height: 1.4rem;
 }
 
 .color-popover__field input[type='radio'] {
@@ -1367,41 +1381,45 @@ select {
   height: 0.75rem;
   margin: 0;
   accent-color: var(--text);
+  justify-self: center;
 }
 
 .color-popover__radio-spacer {
   width: 0.75rem;
   height: 0.75rem;
+  justify-self: center;
 }
 
 .color-popover__field input[type='number'] {
   width: 100%;
   height: 1.35rem;
+  min-width: 0;
   padding: 0 0.25rem;
   border: 1px solid var(--border);
   border-radius: 2px;
   background: var(--panel-2);
   color: var(--text);
   font-size: 0.72rem;
+  box-sizing: border-box;
 }
 
 .color-popover__field em {
   font-style: normal;
   font-size: 0.65rem;
   color: var(--text-dim);
+  min-height: 1em;
 }
 
 .color-popover__hex-row {
   grid-column: 1 / -1;
   display: flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.35rem;
   color: var(--muted);
-  margin-top: 0.1rem;
 }
 
 .color-popover__hex-row input {
-  width: 5.2rem;
+  width: 5.5rem;
   height: 1.4rem;
   padding: 0 0.3rem;
   border: 1px solid var(--border);
@@ -1410,6 +1428,7 @@ select {
   color: var(--text);
   font-family: ui-monospace, Consolas, monospace;
   font-size: 0.75rem;
+  box-sizing: border-box;
 }
 
 .shape-fields {
