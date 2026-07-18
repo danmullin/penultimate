@@ -1177,6 +1177,11 @@ export const useDocStore = create<DocState>((set, get) => ({
   getDocument: () => get().doc,
 }))
 
+// DEV: let browser automation / console hit the live store (Vite HMR forks duplicates on raw import).
+if (import.meta.env.DEV && typeof window !== 'undefined') {
+  ;(window as unknown as { __penStore?: typeof useDocStore }).__penStore = useDocStore
+}
+
 function normalizeSwatchColor(color: string): string | null {
   const raw = color.trim().toLowerCase()
   if (!raw) return null
