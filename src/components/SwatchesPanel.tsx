@@ -68,7 +68,7 @@ function AddSwatchControls({ seed }: { seed: string }) {
       value={draft}
       onChange={setDraft}
       onAdd={(hex) => useDocStore.getState().addSwatch(hex)}
-      addLabel="Add to Swatches"
+      addLabel="Add"
       aria-label="Add swatch"
       title="Pick colors · Add stays open until you close"
       size="sm"

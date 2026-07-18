@@ -37,7 +37,7 @@ export function ColorPicker({
   value,
   onChange,
   onAdd,
-  addLabel = 'Add to Swatches',
+  addLabel = 'Add',
   'aria-label': ariaLabel = 'Color',
   title,
   className,
@@ -54,8 +54,8 @@ export function ColorPicker({
     const place = () => {
       const r = wellRef.current!.getBoundingClientRect()
       const pad = 8
-      const width = 520
-      const height = 360
+      const width = 480
+      const height = 340
       let left = r.left
       let top = r.bottom + 6
       if (left + width > window.innerWidth - pad) left = window.innerWidth - width - pad
