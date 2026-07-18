@@ -291,7 +291,7 @@ export function createEmptyDocument(): VectorDocument {
     activeArtboardId: frame.id,
     settings: {
       gridSize: 16,
-      showGrid: true,
+      showGrid: false,
       snapToGrid: true,
       snapToNeighbors: true,
       snapThreshold: 6,

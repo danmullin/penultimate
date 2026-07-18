@@ -235,31 +235,9 @@ export function Artboard() {
   }
 
   const gridLines = useMemo(() => {
-    const g = doc.settings.gridSize
-    if (!doc.settings.showGrid || g <= 0) return []
-    const lines: Array<{ key: string; x1: number; y1: number; x2: number; y2: number }> = []
-    const x0 = Math.floor(extent.x / g) * g
-    const y0 = Math.floor(extent.y / g) * g
-    for (let x = x0; x <= extent.x + extent.width; x += g) {
-      lines.push({
-        key: `v${x}`,
-        x1: x,
-        y1: extent.y,
-        x2: x,
-        y2: extent.y + extent.height,
-      })
-    }
-    for (let y = y0; y <= extent.y + extent.height; y += g) {
-      lines.push({
-        key: `h${y}`,
-        x1: extent.x,
-        y1: y,
-        x2: extent.x + extent.width,
-        y2: y,
-      })
-    }
-    return lines
-  }, [extent, doc.settings.gridSize, doc.settings.showGrid])
+    // Visual artboard grid removed — snap-to-grid still uses gridSize.
+    return [] as Array<{ key: string; x1: number; y1: number; x2: number; y2: number }>
+  }, [])
 
   const onNodePointerDown = (id: string, e: ReactPointerEvent) => {
     window.getSelection()?.removeAllRanges()

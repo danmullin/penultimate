@@ -90,17 +90,6 @@ export function SettingsModal() {
             <label className="settings-row">
               <input
                 type="checkbox"
-                checked={doc.settings.showGrid}
-                onChange={(e) => setSettings({ showGrid: e.target.checked })}
-              />
-              <span className="settings-row__label">
-                Show grid
-                <span className="settings-row__hint">Visual grid over the artboard</span>
-              </span>
-            </label>
-            <label className="settings-row">
-              <input
-                type="checkbox"
                 checked={outlineMode}
                 onChange={(e) => setOutlineMode(e.target.checked)}
               />
