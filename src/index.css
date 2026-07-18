@@ -1026,11 +1026,6 @@ select {
   justify-content: flex-end;
 }
 
-.props-tool-row--stroke {
-  flex-wrap: wrap;
-  row-gap: 0.25rem;
-}
-
 .props-tool-gap {
   width: 1px;
   height: 0.9rem;
@@ -1047,6 +1042,56 @@ select {
   color: var(--muted);
   margin-right: 0.05rem;
   flex-shrink: 0;
+}
+
+.props-stroke {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.props-stroke__row {
+  display: grid;
+  grid-template-columns: 2.6rem minmax(0, 1fr);
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.props-stroke__label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  line-height: 1;
+}
+
+.props-stroke__controls {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.props-stroke__controls .btn-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  flex-shrink: 0;
+}
+
+.props-stroke__width {
+  width: 3.4rem;
+  height: 1.5rem;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  background: var(--bg-code);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 0 0.3rem;
+  font-size: 0.78rem;
+  color: var(--text);
 }
 
 .props-tool-row--shadow {

@@ -118,79 +118,88 @@ export function PropertiesPanel() {
 
           {strokeOn && (
             <Section title="Stroke" badge={`${primary.style.strokeWidth}px`}>
-              <div className="props-inline-grid">
-                <label className="field-inline">
-                  <span>Width</span>
-                  <input
-                    type="number"
-                    min={0}
-                    step={0.5}
-                    value={primary.style.strokeWidth}
-                    onChange={(e) =>
-                      applyStyleToSelected({
-                        strokeWidth: Math.max(0, Number(e.target.value) || 0),
-                      })
-                    }
-                  />
-                </label>
-                <div className="props-tool-row props-tool-row--end">
-                  <IconButton
-                    icon="dash"
-                    label="Toggle dashed stroke"
-                    active={Boolean(primary.style.strokeDasharray)}
-                    onClick={() =>
-                      applyStyleToSelected({
-                        strokeDasharray: primary.style.strokeDasharray ? null : '6 4',
-                      })
-                    }
-                  />
-                  <IconButton
-                    icon="arrow-end"
-                    label="Toggle end arrow"
-                    active={primary.style.strokeArrow}
-                    onClick={() =>
-                      applyStyleToSelected({ strokeArrow: !primary.style.strokeArrow })
-                    }
-                  />
-                </div>
-              </div>
-              <div className="props-tool-row props-tool-row--stroke">
-                <span className="props-tool-label">Cap</span>
-                {caps.map(([id, icon, label]) => (
-                  <IconButton
-                    key={id}
-                    icon={icon}
-                    label={label}
-                    active={primary.style.strokeLinecap === id}
-                    onClick={() => applyStyleToSelected({ strokeLinecap: id })}
-                  />
-                ))}
-                <span className="props-tool-gap" />
-                <span className="props-tool-label">Join</span>
-                {joins.map(([id, icon, label]) => (
-                  <IconButton
-                    key={id}
-                    icon={icon}
-                    label={label}
-                    active={primary.style.strokeLinejoin === id}
-                    onClick={() => applyStyleToSelected({ strokeLinejoin: id })}
-                  />
-                ))}
-              </div>
-              {supportsStrokeAlign(primary) && (
-                <div className="props-tool-row">
-                  <span className="props-tool-label">Align</span>
-                  {strokeAlignIcons.map(([id, icon, label]) => (
-                    <IconButton
-                      key={id}
-                      icon={icon}
-                      label={label}
-                      active={(primary.style.strokeAlign ?? 'center') === id}
-                      onClick={() => applyStyleToSelected({ strokeAlign: id })}
+              <div className="props-stroke">
+                <div className="props-stroke__row">
+                  <span className="props-stroke__label">Width</span>
+                  <div className="props-stroke__controls">
+                    <input
+                      className="props-stroke__width"
+                      type="number"
+                      min={0}
+                      step={0.5}
+                      aria-label="Stroke width"
+                      value={primary.style.strokeWidth}
+                      onChange={(e) =>
+                        applyStyleToSelected({
+                          strokeWidth: Math.max(0, Number(e.target.value) || 0),
+                        })
+                      }
                     />
-                  ))}
+                    <IconButton
+                      icon="dash"
+                      label="Toggle dashed stroke"
+                      active={Boolean(primary.style.strokeDasharray)}
+                      onClick={() =>
+                        applyStyleToSelected({
+                          strokeDasharray: primary.style.strokeDasharray ? null : '6 4',
+                        })
+                      }
+                    />
+                    <IconButton
+                      icon="arrow-end"
+                      label="Toggle end arrow"
+                      active={primary.style.strokeArrow}
+                      onClick={() =>
+                        applyStyleToSelected({ strokeArrow: !primary.style.strokeArrow })
+                      }
+                    />
+                  </div>
                 </div>
-              )}
+                <div className="props-stroke__row">
+                  <span className="props-stroke__label">Cap</span>
+                  <div className="props-stroke__controls">
+                    {caps.map(([id, icon, label]) => (
+                      <IconButton
+                        key={id}
+                        icon={icon}
+                        label={label}
+                        active={primary.style.strokeLinecap === id}
+                        onClick={() => applyStyleToSelected({ strokeLinecap: id })}
+                      />
+                    ))}
+                  </div>
+                </div>
+                <div className="props-stroke__row">
+                  <span className="props-stroke__label">Join</span>
+                  <div className="props-stroke__controls">
+                    {joins.map(([id, icon, label]) => (
+                      <IconButton
+                        key={id}
+                        icon={icon}
+                        label={label}
+                        active={primary.style.strokeLinejoin === id}
+                        onClick={() => applyStyleToSelected({ strokeLinejoin: id })}
+                      />
+                    ))}
+                  </div>
+                </div>
+                {supportsStrokeAlign(primary) && (
+                  <div className="props-stroke__row">
+                    <span className="props-stroke__label">Align</span>
+                    <div className="props-stroke__controls">
+                      {strokeAlignIcons.map(([id, icon, label]) => (
+                        <IconButton
+                          key={id}
+                          icon={icon}
+                          label={label}
+                          active={(primary.style.strokeAlign ?? 'center') === id}
+                          onClick={() => applyStyleToSelected({ strokeAlign: id })}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             </Section>
           )}
 
