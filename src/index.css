@@ -3036,7 +3036,8 @@ select {
 }
 
 .ruler__tick--v {
-  left: 0;
+  left: auto;
+  right: 0;
   bottom: auto;
   height: 1px;
 }
@@ -3069,10 +3070,12 @@ select {
 }
 
 .ruler__label--v {
-  left: 2px;
+  left: 0;
+  right: auto;
   top: 0;
   writing-mode: vertical-lr;
-  transform: translateY(-50%) rotate(180deg);
+  text-align: left;
+  transform: translateX(0) translateY(-50%) rotate(180deg);
 }
 
 .field-row {
