@@ -1,8 +1,15 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { TAGLINES } from '../data/taglines'
 
 const INTERVAL_MS = 14000
 const TRANSITION_MS = 420
+const STORAGE_KEY = 'penultimate-tagline-ticker'
+
+type Stored = {
+  order?: string[]
+  index?: number
+  text?: string
+}
 
 function shuffleRest(canonical: string, rest: string[]): string[] {
   const pool = rest.filter((t) => t !== canonical)
@@ -13,22 +20,77 @@ function shuffleRest(canonical: string, rest: string[]): string[] {
   return [canonical, ...pool]
 }
 
+/** Merge saved order with current TAGLINES (keep progress, add new, drop removed). */
+function mergeOrder(saved: string[] | undefined): string[] {
+  const known = new Set(TAGLINES)
+  const order = (saved ?? []).filter((t) => known.has(t))
+  for (const t of TAGLINES) {
+    if (!order.includes(t)) order.push(t)
+  }
+  if (order.length === 0) {
+    return shuffleRest('Handles worth dragging', TAGLINES)
+  }
+  return order
+}
+
+function readStored(): { lineup: string[]; index: number } {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    if (raw) {
+      const parsed = JSON.parse(raw) as Stored
+      const lineup = mergeOrder(parsed.order)
+      let index = 0
+      if (typeof parsed.text === 'string') {
+        const byText = lineup.indexOf(parsed.text)
+        if (byText >= 0) index = byText
+      } else if (typeof parsed.index === 'number' && Number.isFinite(parsed.index)) {
+        index = ((parsed.index % lineup.length) + lineup.length) % lineup.length
+      }
+      return { lineup, index }
+    }
+  } catch {
+    /* ignore */
+  }
+  return {
+    lineup: shuffleRest('Handles worth dragging', TAGLINES),
+    index: 0,
+  }
+}
+
+function writeStored(lineup: string[], index: number) {
+  try {
+    const text = lineup[index] ?? lineup[0] ?? ''
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ order: lineup, index, text } satisfies Stored),
+    )
+  } catch {
+    /* ignore */
+  }
+}
+
 /**
  * News-ticker style tagline under the brand — slides out / in on a timer.
+ * Remembers the current line + rotation order in localStorage.
  */
 export function TaglineTicker() {
-  const lineup = useMemo(
-    () => shuffleRest('Handles worth dragging', TAGLINES),
-    [],
-  )
-  const [index, setIndex] = useState(0)
+  const boot = useRef(readStored())
+  const lineupRef = useRef(boot.current.lineup)
+  const [index, setIndex] = useState(boot.current.index)
   const [phase, setPhase] = useState<'in' | 'shown' | 'out'>('shown')
 
   useEffect(() => {
+    writeStored(lineupRef.current, index)
+  }, [index])
+
+  useEffect(() => {
+    const lineup = lineupRef.current
+    const advance = () => {
+      setIndex((i) => (i + 1) % lineup.length)
+    }
+
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      const id = window.setInterval(() => {
-        setIndex((i) => (i + 1) % lineup.length)
-      }, INTERVAL_MS)
+      const id = window.setInterval(advance, INTERVAL_MS)
       return () => window.clearInterval(id)
     }
 
@@ -37,7 +99,7 @@ export function TaglineTicker() {
     const tick = window.setInterval(() => {
       setPhase('out')
       outTimer = window.setTimeout(() => {
-        setIndex((i) => (i + 1) % lineup.length)
+        advance()
         setPhase('in')
         inTimer = window.setTimeout(() => {
           requestAnimationFrame(() => setPhase('shown'))
@@ -50,16 +112,13 @@ export function TaglineTicker() {
       if (outTimer) window.clearTimeout(outTimer)
       if (inTimer) window.clearTimeout(inTimer)
     }
-  }, [lineup.length])
+  }, [])
 
-  const text = lineup[index] ?? TAGLINES[0]!
+  const text = lineupRef.current[index] ?? TAGLINES[0]!
 
   return (
     <span className="menu-bar__tagline-slot" title={text} aria-live="polite">
-      <span
-        className={`menu-bar__tagline menu-bar__tagline--${phase}`}
-        key={index}
-      >
+      <span className={`menu-bar__tagline menu-bar__tagline--${phase}`} key={index}>
         {text}
       </span>
     </span>
