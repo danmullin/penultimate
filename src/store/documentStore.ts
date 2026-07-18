@@ -115,7 +115,7 @@ type DocState = {
 
   setName: (name: string) => void
   setArtboardSize: (width: number, height: number) => void
-  setArtboardBackground: (background: string | null) => void
+  setArtboardBackground: (background: string | null, recordHistory?: boolean) => void
   setSettings: (partial: Partial<VectorDocument['settings']>) => void
   setActiveArtboard: (id: string) => void
   addArtboard: () => void
@@ -140,7 +140,10 @@ type DocState = {
   moveSelectedTo: (x: number, y: number) => void
   resizeSelectionTo: (newBox: { x: number; y: number; width: number; height: number }) => void
   rotateSelected: (rotation: number) => void
-  applyStyleToSelected: (stylePatch: Partial<VecNode['style']>) => void
+  applyStyleToSelected: (
+    stylePatch: Partial<VecNode['style']>,
+    recordHistory?: boolean,
+  ) => void
   reflectSelected: (axis: ReflectAxis) => void
   sampleStyleFromNode: (id: string) => void
 
@@ -351,8 +354,8 @@ export const useDocStore = create<DocState>((set, get) => ({
     })
   },
 
-  setArtboardBackground: (background) => {
-    get().pushHistory()
+  setArtboardBackground: (background, recordHistory = true) => {
+    if (recordHistory) get().pushHistory()
     set((s) => {
       const artboards = s.doc.artboards.map((a) =>
         a.id === s.doc.activeArtboardId ? { ...a, background } : a,
@@ -664,10 +667,10 @@ export const useDocStore = create<DocState>((set, get) => ({
     set((s) => ({ doc: { ...s.doc, nodes } }))
   },
 
-  applyStyleToSelected: (stylePatch) => {
+  applyStyleToSelected: (stylePatch, recordHistory = true) => {
     const { selectedIds, doc } = get()
     if (selectedIds.length === 0) return
-    get().pushHistory()
+    if (recordHistory) get().pushHistory()
     const nodes = { ...doc.nodes }
     for (const id of selectedIds) {
       const n = nodes[id]

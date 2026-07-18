@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { PanelHeader } from './PanelHeader'
 import { ColorPicker } from './ColorPicker'
+import { useColorPickerSession } from '../hooks/useColorPickerSession'
 import { useDocStore } from '../store/documentStore'
-import type { Paint } from '../style/paint'
+import { paintSolid, type Paint } from '../style/paint'
 import { normalizeHex } from '../color/colorMath'
 
 /** Document swatch library — separate from Appearance. */
@@ -58,19 +59,45 @@ export function SwatchesPanel() {
 /** Well opens the picker; Add lives inside so you can keep picking. */
 function AddSwatchControls({ seed }: { seed: string }) {
   const [draft, setDraft] = useState(seed)
+  const draftRef = useRef(draft)
+  draftRef.current = draft
+  const session = useColorPickerSession()
+  /** Color when the popover opened — Cancel restores the well to this. */
+  const openHexRef = useRef(seed)
 
   useEffect(() => {
     setDraft(seed)
   }, [seed])
 
+  const preview = (hex: string) => {
+    setDraft(hex)
+    const store = useDocStore.getState()
+    if (store.selectedIds.length === 0) return
+    const recordHistory = session.beginChange()
+    store.applyStyleToSelected({ fill: paintSolid(hex) }, recordHistory)
+  }
+
   return (
     <ColorPicker
       value={draft}
-      onChange={setDraft}
+      onOpen={() => {
+        session.commit()
+        openHexRef.current = draftRef.current
+      }}
+      onChange={preview}
+      onCancel={() => {
+        session.cancel()
+        setDraft(openHexRef.current)
+      }}
+      onCommit={(hex) => {
+        session.commit()
+        openHexRef.current = hex
+        setDraft(hex)
+      }}
       onAdd={(hex) => useDocStore.getState().addSwatch(hex)}
       addLabel="Add"
       aria-label="Add swatch"
-      title="Pick colors · Add stays open until you close"
+      title="Pick colors · live preview on selection · Add stays open"
       size="sm"
     />
   )

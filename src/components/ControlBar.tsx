@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { paintCssPreview, paintNone } from '../style/paint'
 import { pathfinderTargetIds } from '../ops/paperUtils'
+import { useColorPickerSession } from '../hooks/useColorPickerSession'
 import { useDocStore } from '../store/documentStore'
 import { ColorPicker } from './ColorPicker'
 import { Icon, IconButton } from './Icon'
@@ -32,6 +33,7 @@ export function ControlBar() {
   const selectedIds = useDocStore((s) => s.selectedIds)
   const setArtboardSize = useDocStore((s) => s.setArtboardSize)
   const setArtboardBackground = useDocStore((s) => s.setArtboardBackground)
+  const bgColorSession = useColorPickerSession()
   const setSettings = useDocStore((s) => s.setSettings)
   const align = useDocStore((s) => s.align)
   const distribute = useDocStore((s) => s.distribute)
@@ -446,7 +448,10 @@ export function ControlBar() {
             value={doc.artboard.background ?? '#ffffff'}
             size="sm"
             aria-label="Artboard background"
-            onChange={(hex) => setArtboardBackground(hex)}
+            onOpen={() => bgColorSession.commit()}
+            onChange={(hex) => setArtboardBackground(hex, bgColorSession.beginChange())}
+            onCancel={() => bgColorSession.cancel()}
+            onCommit={() => bgColorSession.commit()}
           />
         </label>
         <label className="check check--icon" {...snapTip}>

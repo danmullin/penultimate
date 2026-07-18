@@ -75,8 +75,10 @@ export function PropertiesPanel() {
   const mixed = nodes.length > 1
   const strokeOn = primary.style.stroke.type !== 'none'
 
-  const setFill = (fill: Paint) => applyStyleToSelected({ fill })
-  const setStroke = (stroke: Paint) => applyStyleToSelected({ stroke })
+  const setFill = (fill: Paint, recordHistory = true) =>
+    applyStyleToSelected({ fill }, recordHistory)
+  const setStroke = (stroke: Paint, recordHistory = true) =>
+    applyStyleToSelected({ stroke }, recordHistory)
 
   const strokeAlignIcons: Array<[StrokeAlign, string, string]> = [
     ['center', 'stroke-center', 'Stroke center'],

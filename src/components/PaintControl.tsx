@@ -6,13 +6,14 @@ import {
   paintSolid,
   type Paint,
 } from '../style/paint'
+import { useColorPickerSession } from '../hooks/useColorPickerSession'
 import { ColorPicker } from './ColorPicker'
 import { IconButton } from './Icon'
 
 type Props = {
   label: string
   paint: Paint
-  onChange: (paint: Paint) => void
+  onChange: (paint: Paint, recordHistory?: boolean) => void
   allowNone?: boolean
 }
 
@@ -62,10 +63,14 @@ export function PaintControl({ label, paint, onChange, allowNone = true }: Props
     }
   }
 
-  const updateStop = (index: number, patch: Partial<{ offset: number; color: string }>) => {
+  const updateStop = (
+    index: number,
+    patch: Partial<{ offset: number; color: string }>,
+    recordHistory = true,
+  ) => {
     if (paint.type !== 'linear' && paint.type !== 'radial') return
     const nextStops = paint.stops.map((s, i) => (i === index ? { ...s, ...patch } : s))
-    onChange({ ...paint, stops: nextStops })
+    onChange({ ...paint, stops: nextStops }, recordHistory)
   }
 
   return (
@@ -113,11 +118,10 @@ export function PaintControl({ label, paint, onChange, allowNone = true }: Props
           />
         </div>
         {mode === 'solid' && (
-          <ColorPicker
+          <SessionColorPicker
             value={solidColor}
             aria-label={`${label} color`}
-            size="sm"
-            onChange={(hex) => onChange(paintSolid(hex))}
+            onPreview={(hex, recordHistory) => onChange(paintSolid(hex), recordHistory)}
           />
         )}
       </div>
@@ -126,11 +130,10 @@ export function PaintControl({ label, paint, onChange, allowNone = true }: Props
         <div className="paint-stops">
           {stops.map((stop, i) => (
             <div key={i} className="paint-stop-row">
-              <ColorPicker
+              <SessionColorPicker
                 value={stop.color}
-                size="sm"
                 aria-label={`${label} stop ${i + 1} color`}
-                onChange={(hex) => updateStop(i, { color: hex })}
+                onPreview={(hex, recordHistory) => updateStop(i, { color: hex }, recordHistory)}
               />
               <input
                 type="range"
@@ -165,5 +168,28 @@ export function PaintControl({ label, paint, onChange, allowNone = true }: Props
         </div>
       )}
     </div>
+  )
+}
+
+function SessionColorPicker({
+  value,
+  'aria-label': ariaLabel,
+  onPreview,
+}: {
+  value: string
+  'aria-label': string
+  onPreview: (hex: string, recordHistory: boolean) => void
+}) {
+  const session = useColorPickerSession()
+  return (
+    <ColorPicker
+      value={value}
+      aria-label={ariaLabel}
+      size="sm"
+      onOpen={() => session.commit()}
+      onChange={(hex) => onPreview(hex, session.beginChange())}
+      onCancel={() => session.cancel()}
+      onCommit={() => session.commit()}
+    />
   )
 }

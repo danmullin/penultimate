@@ -20,8 +20,15 @@ import { useTitleBarDrag } from '../hooks/useTitleBarDrag'
 
 type Props = {
   value: string
+  /** Live preview while picking. */
   onChange: (hex: string) => void
-  /** When set, shows Add to Swatches (picker stays open). */
+  /** Cancel / Escape / click-away — revert selection (e.g. undo session). */
+  onCancel?: () => void
+  /** OK — keep the previewed color. */
+  onCommit?: (hex: string) => void
+  /** Fired when the popover opens (snapshot “current” here). */
+  onOpen?: () => void
+  /** When set, shows Add (picker stays open). */
   onAdd?: (hex: string) => void
   addLabel?: string
   'aria-label'?: string
@@ -32,10 +39,14 @@ type Props = {
 
 /**
  * Photoshop-style in-app color picker. Never uses `<input type="color">`.
+ * OK keeps the live color; Cancel / Escape / click-away restores the open-time color.
  */
 export function ColorPicker({
   value,
   onChange,
+  onCancel,
+  onCommit,
+  onOpen,
   onAdd,
   addLabel = 'Add',
   'aria-label': ariaLabel = 'Color',
@@ -48,6 +59,8 @@ export function ColorPicker({
   const wellRef = useRef<HTMLButtonElement>(null)
   const popRef = useRef<HTMLDivElement>(null)
   const [pos, setPos] = useState({ top: 0, left: 0 })
+  const onOpenRef = useRef(onOpen)
+  onOpenRef.current = onOpen
 
   useLayoutEffect(() => {
     if (!open || !wellRef.current) return
@@ -72,25 +85,6 @@ export function ColorPicker({
     }
   }, [open])
 
-  useEffect(() => {
-    if (!open) return
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setOpen(false)
-    }
-    const onDown = (e: MouseEvent) => {
-      const t = e.target as Node
-      if (wellRef.current?.contains(t)) return
-      if (popRef.current?.contains(t)) return
-      setOpen(false)
-    }
-    window.addEventListener('keydown', onKey)
-    window.addEventListener('mousedown', onDown)
-    return () => {
-      window.removeEventListener('keydown', onKey)
-      window.removeEventListener('mousedown', onDown)
-    }
-  }, [open])
-
   return (
     <>
       <button
@@ -102,16 +96,24 @@ export function ColorPicker({
         aria-expanded={open}
         aria-haspopup="dialog"
         title={title ?? ariaLabel}
-        onClick={() => setOpen((v) => !v)}
+        onClick={() =>
+          setOpen((v) => {
+            if (!v) onOpenRef.current?.()
+            return !v
+          })
+        }
       />
       {open &&
         createPortal(
           <ColorPopover
             panelRef={popRef}
+            wellRef={wellRef}
             initialHex={hex}
             top={pos.top}
             left={pos.left}
             onChange={onChange}
+            onCancel={onCancel}
+            onCommit={onCommit}
             onAdd={onAdd}
             addLabel={addLabel}
             onClose={() => setOpen(false)}
@@ -124,19 +126,25 @@ export function ColorPicker({
 
 function ColorPopover({
   panelRef,
+  wellRef,
   initialHex,
   top,
   left,
   onChange,
+  onCancel,
+  onCommit,
   onAdd,
   addLabel,
   onClose,
 }: {
   panelRef: React.RefObject<HTMLDivElement | null>
+  wellRef: React.RefObject<HTMLButtonElement | null>
   initialHex: string
   top: number
   left: number
   onChange: (hex: string) => void
+  onCancel?: () => void
+  onCommit?: (hex: string) => void
   onAdd?: (hex: string) => void
   addLabel: string
   onClose: () => void
@@ -220,10 +228,47 @@ function ColorPopover({
     dragHue(e.clientY)
   }
 
+  const onChangeRef = useRef(onChange)
+  const onCancelRef = useRef(onCancel)
+  const onCommitRef = useRef(onCommit)
+  onChangeRef.current = onChange
+  onCancelRef.current = onCancel
+  onCommitRef.current = onCommit
+
   const cancel = () => {
-    onChange(currentRef.current)
+    if (onCancelRef.current) onCancelRef.current()
+    else onChangeRef.current(currentRef.current)
     onClose()
   }
+
+  const confirm = () => {
+    const hex = hsvToHex(hsvRef.current)
+    onCommitRef.current?.(hex)
+    onClose()
+  }
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault()
+        cancel()
+      }
+    }
+    const onDown = (e: MouseEvent) => {
+      const t = e.target as Node
+      if (wellRef.current?.contains(t)) return
+      if (panelRef.current?.contains(t)) return
+      cancel()
+    }
+    window.addEventListener('keydown', onKey)
+    window.addEventListener('mousedown', onDown)
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      window.removeEventListener('mousedown', onDown)
+    }
+    // Stable dismiss handlers via refs; run once per open mount.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const hueColor = hsvToHex({ h: hsv.h, s: 1, v: 1 })
   const hDeg = Math.round(hsv.h)
@@ -304,7 +349,7 @@ function ColorPopover({
               <button
                 type="button"
                 className="color-popover__btn color-popover__btn--ok"
-                onClick={onClose}
+                onClick={confirm}
               >
                 OK
               </button>
