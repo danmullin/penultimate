@@ -85,13 +85,13 @@
     "fallback": "crosshair"
   },
   "hand": {
-    "x": 16,
-    "y": 16,
+    "x": 7,
+    "y": 5,
     "fallback": "grab"
   },
   "hand-closed": {
-    "x": 16,
-    "y": 16,
+    "x": 7,
+    "y": 5,
     "fallback": "grabbing"
   }
 }
