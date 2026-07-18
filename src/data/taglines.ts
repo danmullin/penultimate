@@ -17,6 +17,11 @@ export const TAGLINES: string[] = [
   'Join endpoints, not meetings',
   'Smooth enough to lie about',
   'Close the path. Keep the options.',
+  'Anchor points have feelings too',
+  'Convert anchor. Convert yourself.',
+  'Scale from center. Scale from within.',
+  'Clipping mask of confidence',
+  'Compound path, compound interest',
 
   // Tool jokes
   'Direct select your problems',
@@ -26,6 +31,28 @@ export const TAGLINES: string[] = [
   'Marquee like you mean it',
   'Pen tool with commitment issues',
   'Shear pressure. Emotional too.',
+
+  // Graphic design
+  'Kerning: the silent treatment',
+  'Leading questions only',
+  'Negative space, positive attitude',
+  'CMYK my way through this',
+  'Pantone of my problems',
+  'Contrast is a love language',
+  'White space is doing the work',
+  'Align left. Feel right.',
+  'Rule of thirds. Rule of cool.',
+  'Mockup energy, final-file anxiety',
+  'The client said “make it pop”',
+  'Version 47_FINAL_final2',
+
+  // Typography
+  'Ligatures for life',
+  'Baseline jump scare',
+  'Small caps, big feelings',
+  'Em dash — my favorite punctuation',
+  'Italicize the vibe',
+  'Bold claims, regular delivery',
 
   // Nerdy-cute
   'Undo is forever. Commitment is Ctrl+S.',
@@ -62,4 +89,8 @@ export const TAGLINES: string[] = [
   'Fewer tabs. More handles.',
   'Drag. Drop. Repeat.',
   'Fit artboard. Fit narrative.',
+  'Make it kern.',
+  'Less Comic Sans.',
+  'Snap to baseline.',
+  'Export. Regret. Export.',
 ]
