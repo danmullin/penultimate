@@ -1,6 +1,8 @@
 import {
   defaultLinearPaint,
   defaultRadialPaint,
+  linearGradientAngleDeg,
+  linearPaintWithAngle,
   paintCssPreview,
   paintNone,
   paintSolid,
@@ -148,20 +150,34 @@ export function PaintControl({ label, paint, onChange, allowNone = true }: Props
           ))}
           {mode === 'linear' && paint.type === 'linear' && (
             <div className="paint-angles">
+              <label className="paint-angle-field">
+                <span>Angle°</span>
+                <input
+                  type="number"
+                  step={1}
+                  value={linearGradientAngleDeg(paint)}
+                  onChange={(e) => {
+                    const n = Number(e.target.value)
+                    if (!Number.isFinite(n)) return
+                    onChange(linearPaintWithAngle(paint, n))
+                  }}
+                  aria-label={`${label} gradient angle`}
+                />
+              </label>
               <IconButton
                 icon="angle-h"
-                label="Horizontal"
-                onClick={() => onChange({ ...paint, x1: 0, y1: 0.5, x2: 1, y2: 0.5 })}
+                label="0° — horizontal"
+                onClick={() => onChange(linearPaintWithAngle(paint, 0))}
               />
               <IconButton
                 icon="angle-v"
-                label="Vertical"
-                onClick={() => onChange({ ...paint, x1: 0.5, y1: 0, x2: 0.5, y2: 1 })}
+                label="90° — vertical"
+                onClick={() => onChange(linearPaintWithAngle(paint, 90))}
               />
               <IconButton
                 icon="angle-diag"
-                label="Diagonal"
-                onClick={() => onChange({ ...paint, x1: 0, y1: 0, x2: 1, y2: 1 })}
+                label="45° — diagonal"
+                onClick={() => onChange(linearPaintWithAngle(paint, 45))}
               />
             </div>
           )}

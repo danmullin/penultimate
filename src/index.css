@@ -2158,7 +2158,29 @@ select {
 
 .paint-angles {
   display: flex;
+  align-items: center;
   gap: 0.25rem;
+  flex-wrap: wrap;
+  margin-top: 0.35rem;
+}
+
+.paint-angle-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.paint-angle-field input {
+  width: 3.5rem;
+  padding: 0.2rem 0.35rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--panel-2, var(--bg));
+  color: var(--text);
+  font: inherit;
 }
 
 .paint-none-hint {

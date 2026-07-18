@@ -3,25 +3,29 @@ export type GradientStop = {
   color: string
 }
 
+export type LinearPaint = {
+  type: 'linear'
+  /** Object-bounding-box units 0–1 */
+  x1: number
+  y1: number
+  x2: number
+  y2: number
+  stops: GradientStop[]
+}
+
+export type RadialPaint = {
+  type: 'radial'
+  cx: number
+  cy: number
+  r: number
+  stops: GradientStop[]
+}
+
 export type Paint =
   | { type: 'none' }
   | { type: 'solid'; color: string }
-  | {
-      type: 'linear'
-      /** Object-bounding-box units 0–1 */
-      x1: number
-      y1: number
-      x2: number
-      y2: number
-      stops: GradientStop[]
-    }
-  | {
-      type: 'radial'
-      cx: number
-      cy: number
-      r: number
-      stops: GradientStop[]
-    }
+  | LinearPaint
+  | RadialPaint
 
 export function paintNone(): Paint {
   return { type: 'none' }
@@ -122,14 +126,45 @@ function normalizeStops(raw: unknown): GradientStop[] {
     .filter(Boolean) as GradientStop[]
 }
 
+/**
+ * Angle of a linear gradient in degrees (screen space: 0° = left→right,
+ * 90° = top→bottom). Derived from endpoints.
+ */
+export function linearGradientAngleDeg(paint: LinearPaint): number {
+  const deg = (Math.atan2(paint.y2 - paint.y1, paint.x2 - paint.x1) * 180) / Math.PI
+  const norm = ((deg % 360) + 360) % 360
+  return Math.round(norm * 100) / 100
+}
+
+/**
+ * Rebuild linear endpoints through the OBB center for `angleDeg`
+ * (0° = east / left→right, increasing toward south in screen coords).
+ */
+export function linearPaintWithAngle(paint: LinearPaint, angleDeg: number): LinearPaint {
+  const rad = (angleDeg * Math.PI) / 180
+  const dx = Math.cos(rad)
+  const dy = Math.sin(rad)
+  const t = 0.5 / Math.max(Math.abs(dx), Math.abs(dy), 1e-6)
+  return {
+    ...paint,
+    x1: 0.5 - dx * t,
+    y1: 0.5 - dy * t,
+    x2: 0.5 + dx * t,
+    y2: 0.5 + dy * t,
+  }
+}
+
 export function paintCssPreview(paint: Paint): string {
   switch (paint.type) {
     case 'none':
       return 'transparent'
     case 'solid':
       return paint.color
-    case 'linear':
-      return `linear-gradient(${paint.stops.map((s) => `${s.color} ${s.offset * 100}%`).join(', ')})`
+    case 'linear': {
+      // CSS 0deg = to top; our 0° = to right → CSS = ours + 90
+      const cssDeg = linearGradientAngleDeg(paint) + 90
+      return `linear-gradient(${cssDeg}deg, ${paint.stops.map((s) => `${s.color} ${s.offset * 100}%`).join(', ')})`
+    }
     case 'radial':
       return `radial-gradient(circle, ${paint.stops.map((s) => `${s.color} ${s.offset * 100}%`).join(', ')})`
   }
