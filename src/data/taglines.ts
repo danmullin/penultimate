@@ -34,7 +34,6 @@ export const TAGLINES: string[] = [
   'KPI: cute shapes shipped',
 
   // Short sticky
-  'Draw blood. Kidding. Mostly.',
   'Penultimate means we meant it',
   'Fewer tabs. More handles.',
 ]
