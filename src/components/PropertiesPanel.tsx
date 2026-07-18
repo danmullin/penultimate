@@ -204,8 +204,8 @@ export function PropertiesPanel() {
           )}
 
           <Section title="Object">
-            <div className="props-inline-grid props-inline-grid--3">
-              <label className="field-inline field-inline--grow">
+            <div className="props-object">
+              <label className="field-inline">
                 <span>Opacity</span>
                 <input
                   type="range"
@@ -231,45 +231,49 @@ export function PropertiesPanel() {
                   {Math.round(primary.style.opacity * 100)}%
                 </em>
               </label>
-              <label className="field-inline">
-                <span>Blend</span>
-                <select
-                  value={primary.style.blendMode ?? 'normal'}
-                  onChange={(e) =>
-                    applyStyleToSelected({
-                      blendMode: e.target.value as typeof primary.style.blendMode,
-                    })
-                  }
-                >
-                  {[
-                    'normal',
-                    'multiply',
-                    'screen',
-                    'overlay',
-                    'darken',
-                    'lighten',
-                    'color-dodge',
-                    'color-burn',
-                    'hard-light',
-                    'soft-light',
-                    'difference',
-                    'exclusion',
-                  ].map((m) => (
-                    <option key={m} value={m}>
-                      {m}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label className="field-inline">
-                <span>Angle</span>
-                <input
-                  type="number"
-                  value={Math.round(primary.rotation)}
-                  onFocus={() => pushHistory()}
-                  onChange={(e) => rotateSelected(Number(e.target.value) || 0)}
-                />
-              </label>
+              <div className="props-inline-grid props-inline-grid--object">
+                <label className="field-inline">
+                  <span>Blend</span>
+                  <select
+                    value={primary.style.blendMode ?? 'normal'}
+                    onChange={(e) =>
+                      applyStyleToSelected({
+                        blendMode: e.target.value as typeof primary.style.blendMode,
+                      })
+                    }
+                  >
+                    {[
+                      'normal',
+                      'multiply',
+                      'screen',
+                      'overlay',
+                      'darken',
+                      'lighten',
+                      'color-dodge',
+                      'color-burn',
+                      'hard-light',
+                      'soft-light',
+                      'difference',
+                      'exclusion',
+                    ].map((m) => (
+                      <option key={m} value={m}>
+                        {m}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="field-inline field-inline--angle">
+                  <span>Angle</span>
+                  <input
+                    type="number"
+                    step={1}
+                    value={Math.round(primary.rotation)}
+                    onFocus={() => pushHistory()}
+                    onChange={(e) => rotateSelected(Number(e.target.value) || 0)}
+                    aria-label="Rotation angle"
+                  />
+                </label>
+              </div>
             </div>
 
             <div className="props-tool-row props-tool-row--shadow">

@@ -977,6 +977,17 @@ select {
   align-items: center;
 }
 
+.props-inline-grid--object {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+}
+
+.props-object {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
 .field-inline {
   display: flex;
   align-items: center;
@@ -1008,6 +1019,24 @@ select {
 
 .field-inline input[type='number'] {
   max-width: 4.5rem;
+  /* Room for native spin buttons so digits stay readable */
+  padding-right: 0.15rem;
+  padding-inline-end: 1.15rem;
+}
+
+.field-inline--angle {
+  flex: 0 0 auto;
+}
+
+.field-inline--angle > span {
+  min-width: 0;
+}
+
+.field-inline--angle input[type='number'] {
+  width: 3.75rem;
+  max-width: 3.75rem;
+  flex: 0 0 3.75rem;
+  box-sizing: border-box;
 }
 
 .field-inline input[type='range'] {
@@ -1055,6 +1084,7 @@ select {
   width: 2.8rem;
   max-width: 2.8rem;
   padding: 0.15rem 0.25rem;
+  padding-inline-end: 1rem;
 }
 
 .props-tool-row {
