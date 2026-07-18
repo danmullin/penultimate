@@ -6,32 +6,41 @@ import {
   type PointerEvent as ReactPointerEvent,
 } from 'react'
 import { useDocStore } from '../store/documentStore'
-import { documentExtent } from '../geometry'
 
 const RULER = 20
 
 /**
  * Top + left rulers. Drag from a ruler onto the canvas to place a manual guide.
- * Tick positions track the live SVG (center/padding/scroll), not the pane origin.
+ * Tick positions track the live SVG viewBox (camera zoom/pan).
  *
  * The host shell always stays mounted so toggling rulers does not remount the
  * artboard (which would drop wheel zoom listeners and kick auto-fit).
  */
 export function Rulers({
   scale,
+  camera,
   children,
 }: {
   scale: number
+  camera: { x: number; y: number }
   children: ReactNode
 }) {
   const doc = useDocStore((s) => s.doc)
   const showRulers = useDocStore((s) => s.showRulers)
   const addManualGuide = useDocStore((s) => s.addManualGuide)
-  const extent = documentExtent(doc)
   const hostRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLDivElement>(null)
-  /** Screen offset of document (extent.x, extent.y) within the canvas slot. */
-  const [origin, setOrigin] = useState({ x: 0, y: 0 })
+  /** Visible document window + screen placement of the SVG within the canvas slot. */
+  const [view, setView] = useState({
+    ox: 0,
+    oy: 0,
+    vx: 0,
+    vy: 0,
+    vw: 1,
+    vh: 1,
+    sw: 1,
+    sh: 1,
+  })
 
   useLayoutEffect(() => {
     if (!showRulers) return
@@ -45,24 +54,29 @@ export function Rulers({
     const update = () => {
       const slotRect = slot.getBoundingClientRect()
       const svgRect = svg.getBoundingClientRect()
-      setOrigin({
-        x: svgRect.left - slotRect.left,
-        y: svgRect.top - slotRect.top,
+      const vb = svg.viewBox.baseVal
+      setView({
+        ox: svgRect.left - slotRect.left,
+        oy: svgRect.top - slotRect.top,
+        vx: vb.x,
+        vy: vb.y,
+        vw: Math.max(vb.width, 0.0001),
+        vh: Math.max(vb.height, 0.0001),
+        sw: Math.max(svgRect.width, 1),
+        sh: Math.max(svgRect.height, 1),
       })
     }
 
     update()
-    host.addEventListener('scroll', update, { passive: true })
     const ro = new ResizeObserver(update)
     ro.observe(host)
     ro.observe(svg)
     window.addEventListener('resize', update)
     return () => {
-      host.removeEventListener('scroll', update)
       ro.disconnect()
       window.removeEventListener('resize', update)
     }
-  }, [showRulers, scale, extent.x, extent.y, extent.width, extent.height])
+  }, [showRulers, scale, camera.x, camera.y])
 
   const tickLen = (major: boolean) => (major ? 8 : 4)
 
@@ -72,8 +86,12 @@ export function Rulers({
     const step = doc.settings.gridSize > 0 ? doc.settings.gridSize : 16
     const majorEvery = 5
     let i = 0
-    for (let x = Math.ceil(extent.x / step) * step; x <= extent.x + extent.width; x += step) {
-      const screen = origin.x + (x - extent.x) * scale
+    for (
+      let x = Math.ceil(view.vx / step) * step;
+      x <= view.vx + view.vw;
+      x += step
+    ) {
+      const screen = view.ox + ((x - view.vx) / view.vw) * view.sw
       hTicks.push({
         pos: screen,
         major: i % majorEvery === 0,
@@ -82,8 +100,12 @@ export function Rulers({
       i++
     }
     i = 0
-    for (let y = Math.ceil(extent.y / step) * step; y <= extent.y + extent.height; y += step) {
-      const screen = origin.y + (y - extent.y) * scale
+    for (
+      let y = Math.ceil(view.vy / step) * step;
+      y <= view.vy + view.vh;
+      y += step
+    ) {
+      const screen = view.oy + ((y - view.vy) / view.vh) * view.sh
       vTicks.push({
         pos: screen,
         major: i % majorEvery === 0,
@@ -97,15 +119,23 @@ export function Rulers({
     const svg = canvasRef.current?.querySelector('.artboard-svg') as SVGSVGElement | null
     if (!svg) {
       return {
-        x: (clientX - (hostRef.current?.getBoundingClientRect().left ?? 0) - RULER) / scale + extent.x,
-        y: (clientY - (hostRef.current?.getBoundingClientRect().top ?? 0) - RULER) / scale + extent.y,
+        x: camera.x + (clientX - (hostRef.current?.getBoundingClientRect().left ?? 0) - RULER) / scale,
+        y: camera.y + (clientY - (hostRef.current?.getBoundingClientRect().top ?? 0) - RULER) / scale,
       }
     }
-    const svgRect = svg.getBoundingClientRect()
-    return {
-      x: (clientX - svgRect.left) / scale + extent.x,
-      y: (clientY - svgRect.top) / scale + extent.y,
+    const pt = svg.createSVGPoint()
+    pt.x = clientX
+    pt.y = clientY
+    const ctm = svg.getScreenCTM()
+    if (!ctm) {
+      const svgRect = svg.getBoundingClientRect()
+      return {
+        x: camera.x + (clientX - svgRect.left) / scale,
+        y: camera.y + (clientY - svgRect.top) / scale,
+      }
     }
+    const local = pt.matrixTransform(ctm.inverse())
+    return { x: local.x, y: local.y }
   }
 
   const onHRulerDown = (e: ReactPointerEvent) => {

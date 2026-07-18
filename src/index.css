@@ -2817,11 +2817,11 @@ select {
 .artboard-host {
   position: relative;
   flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: auto;
-  padding: 1rem;
+  min-height: 0;
+  min-width: 0;
+  /* Camera zoom: SVG fills the host; pan/zoom via viewBox — no scroll-sized SVG. */
+  overflow: hidden;
+  padding: 0;
   background: var(--canvas-pad, var(--bg));
   /* Transparent 1×1 + none — hides OS cursor even when children set pointer/move/resize */
   cursor: url('data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7') 0 0, none !important;
@@ -2881,6 +2881,9 @@ select {
 }
 
 .artboard-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
   background: var(--canvas-pad, var(--bg-code));
   /* No outer slab shadow — artboard frames carry their own drop shadow. */
   box-shadow: none;

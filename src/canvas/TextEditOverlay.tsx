@@ -88,8 +88,8 @@ function layoutForText(
     ? Math.max(node.fontSize * scale * 1.2, (node.height ?? 40) * scale)
     : (ascent + descent) * scale
   return {
-    left: screen.x - hostRect.left + host.scrollLeft,
-    top: screen.y - hostRect.top + host.scrollTop - (isArea ? 0 : ascentPx),
+    left: screen.x - hostRect.left,
+    top: screen.y - hostRect.top - (isArea ? 0 : ascentPx),
     fontSize: node.fontSize * scale,
     fontFamily: node.fontFamily,
     fontWeight: node.fontWeight,

@@ -50,6 +50,16 @@ export function Artboard() {
   const zoomRef = useRef(zoom)
   zoomRef.current = zoom
   const scale = zoom
+  /** Camera: top-left of the viewport in document space. Zoom is applied via viewBox. */
+  const [cam, setCam] = useState({ x: 0, y: 0 })
+  const camRef = useRef(cam)
+  camRef.current = cam
+  const [viewport, setViewport] = useState({ w: 1, h: 1 })
+  const viewportRef = useRef(viewport)
+  viewportRef.current = viewport
+  /** When true, zoom change already adjusted cam (fit / zoom-at-cursor). */
+  const skipCamZoomSync = useRef(false)
+  const prevZoomForCam = useRef(zoom)
   const [penCursor, setPenCursor] = useState<{ x: number; y: number } | null>(null)
   const draw = useRef<{
     startX: number
@@ -159,51 +169,86 @@ export function Artboard() {
   useEffect(() => {
     const host = hostRef.current
     if (!host) return
-    // Observe the stable rulers shell (not the artboard pane). Toggling rulers
-    // changes artboard-host size but not the shell — so we don't auto-refit /
-    // steal zoom when chrome shows or hides.
-    const shell =
-      (host.closest('.rulers-host') as HTMLElement | null) ?? host
 
     const fit = () => {
       const pad = 48
-      const chrome = shell.classList.contains('rulers-host--hidden') ? 0 : 20
-      // Fit to artboards only — pasteboard margin stays scrollable around them.
-      const sx = (shell.clientWidth - pad - chrome) / fitExtent.width
-      const sy = (shell.clientHeight - pad - chrome) / fitExtent.height
+      const w = Math.max(1, host.clientWidth)
+      const h = Math.max(1, host.clientHeight)
+      setViewport({ w, h })
+      // Fit to artboards only — pasteboard stays reachable via pan.
+      const sx = (w - pad) / fitExtent.width
+      const sy = (h - pad) / fitExtent.height
       const next = Math.min(64, Math.max(0.05, Math.min(sx, sy)))
+      const vw = w / next
+      const vh = h / next
+      skipCamZoomSync.current = true
+      prevZoomForCam.current = next
       setZoom(next, false)
+      setCam({
+        x: fitExtent.x - (vw - fitExtent.width) / 2,
+        y: fitExtent.y - (vh - fitExtent.height) / 2,
+      })
+    }
+
+    const onResize = () => {
+      const w = Math.max(1, host.clientWidth)
+      const h = Math.max(1, host.clientHeight)
+      setViewport({ w, h })
+      if (!useDocStore.getState().zoomPinned) fit()
     }
 
     if (!zoomPinned) fit()
+    else {
+      setViewport({
+        w: Math.max(1, host.clientWidth),
+        h: Math.max(1, host.clientHeight),
+      })
+    }
 
-    const ro = new ResizeObserver(() => {
-      if (!useDocStore.getState().zoomPinned) fit()
-    })
-    ro.observe(shell)
+    const ro = new ResizeObserver(onResize)
+    ro.observe(host)
     return () => ro.disconnect()
   }, [fitExtent.width, fitExtent.height, fitNonce, zoomPinned, setZoom])
 
-  /** Zoom keeping the artboard point under the cursor stable. */
+  /** Toolbar / shortcut zoom: keep viewport center stable. */
+  useEffect(() => {
+    const prev = prevZoomForCam.current
+    if (prev === zoom) return
+    if (skipCamZoomSync.current) {
+      skipCamZoomSync.current = false
+      prevZoomForCam.current = zoom
+      return
+    }
+    const vp = viewportRef.current
+    const cx = camRef.current.x + vp.w / prev / 2
+    const cy = camRef.current.y + vp.h / prev / 2
+    prevZoomForCam.current = zoom
+    setCam({
+      x: cx - vp.w / zoom / 2,
+      y: cy - vp.h / zoom / 2,
+    })
+  }, [zoom])
+
+  /** Zoom keeping the document point under the cursor stable. */
   const zoomAtClient = (clientX: number, clientY: number, nextZoom: number) => {
     const host = hostRef.current
-    const svg = svgRef.current
     const prev = zoomRef.current
     const clamped = Math.min(64, Math.max(0.05, nextZoom))
-    if (!host || !svg || clamped === prev) {
+    if (!host || clamped === prev) {
       setZoom(clamped, true)
       return
     }
-    const svgRect = svg.getBoundingClientRect()
-    const fx = svgRect.width > 0 ? (clientX - svgRect.left) / svgRect.width : 0.5
-    const fy = svgRect.height > 0 ? (clientY - svgRect.top) / svgRect.height : 0.5
+    const rect = host.getBoundingClientRect()
+    const mx = clientX - rect.left
+    const my = clientY - rect.top
+    const docX = camRef.current.x + mx / prev
+    const docY = camRef.current.y + my / prev
+    skipCamZoomSync.current = true
+    prevZoomForCam.current = clamped
     setZoom(clamped, true)
-    requestAnimationFrame(() => {
-      const after = svg.getBoundingClientRect()
-      const dx = after.left + fx * after.width - clientX
-      const dy = after.top + fy * after.height - clientY
-      host.scrollLeft += dx
-      host.scrollTop += dy
+    setCam({
+      x: docX - mx / clamped,
+      y: docY - my / clamped,
     })
   }
 
@@ -211,10 +256,19 @@ export function Artboard() {
     const el = hostRef.current
     if (!el) return
     const onWheel = (e: WheelEvent) => {
-      if (!(e.ctrlKey || e.metaKey)) return
+      if (e.ctrlKey || e.metaKey) {
+        e.preventDefault()
+        const factor = Math.exp(-e.deltaY * 0.0018)
+        zoomAtClient(e.clientX, e.clientY, zoomRef.current * factor)
+        return
+      }
+      // Trackpad / wheel pan in document space
       e.preventDefault()
-      const factor = Math.exp(-e.deltaY * 0.0018)
-      zoomAtClient(e.clientX, e.clientY, zoomRef.current * factor)
+      const z = zoomRef.current
+      setCam((c) => ({
+        x: c.x + e.deltaX / z,
+        y: c.y + e.deltaY / z,
+      }))
     }
     el.addEventListener('wheel', onWheel, { passive: false })
     return () => el.removeEventListener('wheel', onWheel)
@@ -759,16 +813,20 @@ export function Artboard() {
     !penDrag.current &&
     Math.hypot(penCursor.x - penPoints[0].x, penCursor.y - penPoints[0].y) < 10 / scale
 
+  const viewBoxW = viewport.w / Math.max(scale, 0.0001)
+  const viewBoxH = viewport.h / Math.max(scale, 0.0001)
+
   return (
-    <Rulers scale={scale}>
+    <Rulers scale={scale} camera={cam}>
     <div ref={hostRef} className={`artboard-host${outlineMode ? ' artboard-host--outline' : ''}`}>
       <ToolCursorOverlay tool={tool} hostRef={hostRef} override={penClose ? 'pen-close' : null} />
       <svg
         ref={svgRef}
         className="artboard-svg artboard-svg--custom-cursor"
-        width={extent.width * scale}
-        height={extent.height * scale}
-        viewBox={`${extent.x} ${extent.y} ${extent.width} ${extent.height}`}
+        width="100%"
+        height="100%"
+        viewBox={`${cam.x} ${cam.y} ${viewBoxW} ${viewBoxH}`}
+        preserveAspectRatio="none"
         onPointerDown={onBackgroundDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
