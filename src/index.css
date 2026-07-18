@@ -116,7 +116,7 @@
   --glow: transparent;
   --brand-shadow: none;
   --canvas-pad: #e8e0d2;
-  --canvas-grid: rgba(42, 36, 28, 0.08);
+  --canvas-grid: rgba(42, 36, 28, 0.03);
   --canvas-frame-shadow: #5a4a38;
   --canvas-svg-shadow: 0 0 0 1px var(--border), 0 10px 28px rgba(42, 36, 28, 0.12);
 }
