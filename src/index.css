@@ -1096,6 +1096,13 @@ select {
   gap: 0.25rem;
 }
 
+.swatch-add-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  flex-shrink: 0;
+}
+
 .swatch-add {
   position: relative;
   display: inline-flex;
@@ -1103,6 +1110,21 @@ select {
   height: 1.55rem;
   flex-shrink: 0;
   cursor: pointer;
+}
+
+.swatch-add--well {
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.swatch-add__well {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, #000 12%, transparent);
 }
 
 .swatch-add__btn {
@@ -1121,8 +1143,8 @@ select {
   pointer-events: none;
 }
 
-.swatch-add:hover .swatch-add__btn {
-  background: var(--hover);
+.swatch-add:hover .swatch-add__btn,
+.swatch-add--well:hover .swatch-add__well {
   border-color: var(--border-strong);
 }
 
@@ -1135,6 +1157,28 @@ select {
   cursor: pointer;
   border: none;
   padding: 0;
+}
+
+.swatch-add__commit {
+  height: 1.55rem;
+  padding: 0 0.45rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--panel-2);
+  color: var(--text);
+  font-size: 0.68rem;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.swatch-add__commit:hover {
+  background: var(--hover);
+  border-color: var(--border-strong);
+}
+
+.swatch-add__commit:active {
+  transform: translateY(0.5px);
 }
 
 .shape-fields {
