@@ -532,3 +532,13 @@ export function artboardFramesExtent(doc: VectorDocument): BBox {
     height: Math.max(1, maxY - minY),
   }
 }
+
+/** Inflate a bbox by `margin` on every side. */
+export function inflateBBox(box: BBox, margin: number): BBox {
+  return {
+    x: box.x - margin,
+    y: box.y - margin,
+    width: Math.max(1, box.width + margin * 2),
+    height: Math.max(1, box.height + margin * 2),
+  }
+}

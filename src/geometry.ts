@@ -1,11 +1,17 @@
 import type { BBox, GroupNode, VecNode, VectorDocument } from './types'
-import { artboardFramesExtent, PASTEBOARD_MARGIN } from './types'
+import {
+  artboardFramesExtent,
+  inflateBBox,
+  PASTEBOARD_MARGIN,
+} from './types'
 import { pathBounds, scalePathD, translatePathD } from './ops/pathSvg'
 import {
   pathFromPrimitive,
   scalePrimitive,
   translatePrimitive,
 } from './ops/shapes'
+
+export { artboardFramesExtent, PASTEBOARD_MARGIN } from './types'
 
 export function round2(n: number): number {
   return Math.round(n * 100) / 100
@@ -96,32 +102,12 @@ export function unionBoxes(boxes: BBox[]): BBox {
 }
 
 /**
- * Editor canvas extent: artboard union + pasteboard margin + visible object bounds
- * so Illustrator-style void objects stay on-screen.
+ * Editor canvas extent: artboard union + fixed pasteboard margin.
+ * Intentionally does NOT grow with object bounds — dynamic growth made the
+ * SVG (`extent * zoom`) hit browser size limits and capped zoom-in.
  */
 export function documentExtent(doc: VectorDocument): BBox {
-  const frames = artboardFramesExtent(doc)
-  let minX = frames.x - PASTEBOARD_MARGIN
-  let minY = frames.y - PASTEBOARD_MARGIN
-  let maxX = frames.x + frames.width + PASTEBOARD_MARGIN
-  let maxY = frames.y + frames.height + PASTEBOARD_MARGIN
-
-  for (const id of doc.zOrder) {
-    const n = doc.nodes[id]
-    if (!n || !n.visible) continue
-    const b = nodeBBox(n, doc)
-    minX = Math.min(minX, b.x)
-    minY = Math.min(minY, b.y)
-    maxX = Math.max(maxX, b.x + b.width)
-    maxY = Math.max(maxY, b.y + b.height)
-  }
-
-  return {
-    x: minX,
-    y: minY,
-    width: Math.max(1, maxX - minX),
-    height: Math.max(1, maxY - minY),
-  }
+  return inflateBBox(artboardFramesExtent(doc), PASTEBOARD_MARGIN)
 }
 
 export function selectionBBox(ids: string[], doc: VectorDocument): BBox | null {

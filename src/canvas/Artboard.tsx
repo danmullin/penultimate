@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointer
 import { defaultStyle, defaultTextStyle, nextId, snapPoint, useDocStore } from '../store/documentStore'
 import { paintNone } from '../style/paint'
 import {
+  artboardFramesExtent,
   documentExtent,
   parentOf,
   selectionBBox,
@@ -90,7 +91,11 @@ export function Artboard() {
 
   const extent = useMemo(
     () => documentExtent(doc),
-    [doc.artboards, doc.artboard, doc.nodes, doc.zOrder],
+    [doc.artboards, doc.artboard],
+  )
+  const fitExtent = useMemo(
+    () => artboardFramesExtent(doc),
+    [doc.artboards, doc.artboard],
   )
 
   const beginTextEdit = (id: string, opts?: { isNew?: boolean }) => {
@@ -163,8 +168,9 @@ export function Artboard() {
     const fit = () => {
       const pad = 48
       const chrome = shell.classList.contains('rulers-host--hidden') ? 0 : 20
-      const sx = (shell.clientWidth - pad - chrome) / extent.width
-      const sy = (shell.clientHeight - pad - chrome) / extent.height
+      // Fit to artboards only — pasteboard margin stays scrollable around them.
+      const sx = (shell.clientWidth - pad - chrome) / fitExtent.width
+      const sy = (shell.clientHeight - pad - chrome) / fitExtent.height
       const next = Math.min(64, Math.max(0.05, Math.min(sx, sy)))
       setZoom(next, false)
     }
@@ -176,7 +182,7 @@ export function Artboard() {
     })
     ro.observe(shell)
     return () => ro.disconnect()
-  }, [extent.width, extent.height, fitNonce, zoomPinned, setZoom])
+  }, [fitExtent.width, fitExtent.height, fitNonce, zoomPinned, setZoom])
 
   /** Zoom keeping the artboard point under the cursor stable. */
   const zoomAtClient = (clientX: number, clientY: number, nextZoom: number) => {
