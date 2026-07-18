@@ -7,8 +7,8 @@ type Handle = 'nw' | 'ne' | 'sw' | 'se' | 'n' | 'e' | 's' | 'w' | 'rotate'
 
 type DragState = {
   kind: 'move' | Handle
-  startClientX: number
-  startClientY: number
+  startLocalX: number
+  startLocalY: number
   originBox: { x: number; y: number; width: number; height: number }
   originRotation: number
   startPointerAngle: number
@@ -68,9 +68,7 @@ export function SelectionOverlay({
   const setGuides = useDocStore((s) => s.setGuides)
 
   const drag = useRef<DragState | null>(null)
-  const scaleRef = useRef(scale)
   const aspectLockRef = useRef(aspectLock)
-  scaleRef.current = scale
   aspectLockRef.current = aspectLock
 
   const [rotatePointer, setRotatePointer] = useState<{ x: number; y: number } | null>(
@@ -91,9 +89,10 @@ export function SelectionOverlay({
     const onMove = (e: PointerEvent) => {
       const d = drag.current
       if (!d) return
-      const s = scaleRef.current
-      const dx = (e.clientX - d.startClientX) / s
-      const dy = (e.clientY - d.startClientY) / s
+      const local = svgLocalFromClient(e.clientX, e.clientY, d.svg)
+      if (!local) return
+      const dx = local.x - d.startLocalX
+      const dy = local.y - d.startLocalY
 
       if (d.kind === 'move') {
         moveSelectedTo(d.originBox.x + dx, d.originBox.y + dy)
@@ -101,8 +100,6 @@ export function SelectionOverlay({
       }
 
       if (d.kind === 'rotate') {
-        const local = svgLocalFromClient(e.clientX, e.clientY, d.svg)
-        if (!local) return
         setRotatePointer(local)
         const ocx = d.originBox.x + d.originBox.width / 2
         const ocy = d.originBox.y + d.originBox.height / 2
@@ -199,10 +196,12 @@ export function SelectionOverlay({
     e.stopPropagation()
     ;(e.currentTarget as Element).setPointerCapture?.(e.pointerId)
     pushHistory()
+    const local = svgLocalFromClient(e.clientX, e.clientY, svg)
+    if (!local) return
     drag.current = {
       kind,
-      startClientX: e.clientX,
-      startClientY: e.clientY,
+      startLocalX: local.x,
+      startLocalY: local.y,
       originBox: { ...box },
       originRotation: rotation,
       startPointerAngle,
@@ -210,8 +209,7 @@ export function SelectionOverlay({
     }
     if (kind === 'rotate') {
       setRotating(true)
-      const local = svgLocalFromClient(e.clientX, e.clientY, svg)
-      if (local) setRotatePointer(local)
+      setRotatePointer(local)
     }
   }
 

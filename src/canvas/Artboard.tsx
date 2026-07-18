@@ -67,8 +67,8 @@ export function Artboard() {
   const pencilPts = useRef<Array<{ x: number; y: number }>>([])
   const [pencilPreview, setPencilPreview] = useState<string>('')
   const moveDrag = useRef<{
-    startClientX: number
-    startClientY: number
+    startLocalX: number
+    startLocalY: number
     originBox: BBox
   } | null>(null)
   const marquee = useRef<{
@@ -352,9 +352,10 @@ export function Artboard() {
     e.stopPropagation()
     svgRef.current?.setPointerCapture(e.pointerId)
     pushHistory()
+    const local = toLocal(e)
     moveDrag.current = {
-      startClientX: e.clientX,
-      startClientY: e.clientY,
+      startLocalX: local.x,
+      startLocalY: local.y,
       originBox: { ...box },
     }
   }
@@ -460,8 +461,9 @@ export function Artboard() {
 
   const onPointerMove = (e: ReactPointerEvent) => {
     if (moveDrag.current) {
-      const dx = (e.clientX - moveDrag.current.startClientX) / scale
-      const dy = (e.clientY - moveDrag.current.startClientY) / scale
+      const local = toLocal(e)
+      const dx = local.x - moveDrag.current.startLocalX
+      const dy = local.y - moveDrag.current.startLocalY
       moveSelectedTo(
         moveDrag.current.originBox.x + dx,
         moveDrag.current.originBox.y + dy,
