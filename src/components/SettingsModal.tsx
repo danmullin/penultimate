@@ -118,7 +118,9 @@ export function SettingsModal() {
               />
               <span className="settings-row__label">
                 Smart guides
-                <span className="settings-row__hint">Snap to edges and centers of nearby objects</span>
+                <span className="settings-row__hint">
+                  Snap to artboard edges/centers and nearby objects while moving or drawing
+                </span>
               </span>
             </label>
             <label className="settings-row settings-row--field">

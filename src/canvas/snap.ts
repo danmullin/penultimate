@@ -1,10 +1,12 @@
-import type { BBox, DocSettings, SnapGuide } from '../types'
+import type { ArtboardFrame, BBox, DocSettings, SnapGuide } from '../types'
 
 export type SnapResult = {
   x: number
   y: number
   guides: SnapGuide[]
 }
+
+export type ArtboardSnapBounds = Pick<ArtboardFrame, 'x' | 'y' | 'width' | 'height'>
 
 function snapValue(
   value: number,
@@ -24,11 +26,24 @@ function snapValue(
   return { value: best, snapped: true, target: best }
 }
 
+/** Edge + center lines for every artboard frame. */
+function artboardAxisTargets(artboards: ArtboardSnapBounds[]): {
+  xs: number[]
+  ys: number[]
+} {
+  const xs: number[] = []
+  const ys: number[] = []
+  for (const a of artboards) {
+    xs.push(a.x, a.x + a.width / 2, a.x + a.width)
+    ys.push(a.y, a.y + a.height / 2, a.y + a.height)
+  }
+  return { xs, ys }
+}
+
 export function snapBBox(
   box: BBox,
   others: BBox[],
-  artboardW: number,
-  artboardH: number,
+  artboards: ArtboardSnapBounds[],
   settings: DocSettings,
   manualGuides: SnapGuide[] = [],
 ): SnapResult {
@@ -37,8 +52,9 @@ export function snapBBox(
   const guides: SnapGuide[] = []
 
   if (settings.snapToNeighbors) {
-    const xs = [0, artboardW / 2, artboardW]
-    const ys = [0, artboardH / 2, artboardH]
+    const { xs: abXs, ys: abYs } = artboardAxisTargets(artboards)
+    const xs = [...abXs]
+    const ys = [...abYs]
     for (const r of others) {
       xs.push(r.x, r.x + r.width / 2, r.x + r.width)
       ys.push(r.y, r.y + r.height / 2, r.y + r.height)
@@ -119,14 +135,45 @@ export function snapBBox(
   return { x: Math.round(x), y: Math.round(y), guides }
 }
 
+/**
+ * Point snap for creating shapes / pen. Magnetic artboard edges+centers when
+ * smart guides (`snapToNeighbors`) are on; grid fills in remaining axes.
+ */
 export function snapPoint(
   x: number,
   y: number,
   settings: DocSettings,
-): { x: number; y: number } {
-  if (!settings.snapToGrid || settings.gridSize <= 0) {
-    return { x: Math.round(x), y: Math.round(y) }
+  artboards: ArtboardSnapBounds[] = [],
+): { x: number; y: number; guides: SnapGuide[] } {
+  let sx = x
+  let sy = y
+  const guides: SnapGuide[] = []
+
+  if (settings.snapToNeighbors && artboards.length > 0) {
+    const { xs, ys } = artboardAxisTargets(artboards)
+    const threshold = settings.snapThreshold
+    const snappedX = snapValue(sx, xs, threshold)
+    const snappedY = snapValue(sy, ys, threshold)
+    if (snappedX.snapped) {
+      sx = snappedX.value
+      guides.push({ orientation: 'vertical', position: snappedX.target! })
+    }
+    if (snappedY.snapped) {
+      sy = snappedY.value
+      guides.push({ orientation: 'horizontal', position: snappedY.target! })
+    }
   }
-  const g = settings.gridSize
-  return { x: Math.round(x / g) * g, y: Math.round(y / g) * g }
+
+  if (settings.snapToGrid && settings.gridSize > 0) {
+    const g = settings.gridSize
+    const hasV = guides.some((gde) => gde.orientation === 'vertical')
+    const hasH = guides.some((gde) => gde.orientation === 'horizontal')
+    if (!hasV) sx = Math.round(sx / g) * g
+    if (!hasH) sy = Math.round(sy / g) * g
+  } else {
+    if (!guides.some((g) => g.orientation === 'vertical')) sx = Math.round(sx)
+    if (!guides.some((g) => g.orientation === 'horizontal')) sy = Math.round(sy)
+  }
+
+  return { x: sx, y: sy, guides }
 }

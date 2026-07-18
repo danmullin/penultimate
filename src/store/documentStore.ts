@@ -686,8 +686,7 @@ export const useDocStore = create<DocState>((set, get) => ({
     const snapped = snapBBox(
       { ...box, x, y },
       others,
-      doc.artboard.width,
-      doc.artboard.height,
+      doc.artboards,
       doc.settings,
       doc.manualGuides,
     )
@@ -1074,7 +1073,7 @@ export const useDocStore = create<DocState>((set, get) => ({
 
   addPenPoint: (x, y, control) => {
     const { doc, penDraft } = get()
-    const pt = snapPoint(x, y, doc.settings)
+    const pt = snapPoint(x, y, doc.settings, doc.artboards)
     const point = control
       ? { ...pt, cx: control.cx, cy: control.cy }
       : pt

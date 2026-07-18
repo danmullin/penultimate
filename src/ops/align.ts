@@ -37,8 +37,12 @@ export function alignNodes(
 
   if (boxes.length === 0) return nodes
 
+  const active =
+    doc.artboards.find((a) => a.id === doc.activeArtboardId) ?? doc.artboards[0]
   const ref: BBox = relativeToArtboard
-    ? { x: 0, y: 0, width: doc.artboard.width, height: doc.artboard.height }
+    ? active
+      ? { x: active.x, y: active.y, width: active.width, height: active.height }
+      : { x: 0, y: 0, width: doc.artboard.width, height: doc.artboard.height }
     : unionBoxes(boxes.map((b) => b.box))
 
   for (const item of boxes) {

@@ -354,7 +354,7 @@ export function Artboard() {
       // Non-text under Type: place a new point-text at this click.
       if (tool === 'text' && n && n.type !== 'text') {
         const { x, y } = toLocal(e)
-        const snapped = snapPoint(x, y, doc.settings)
+        const snapped = snapPoint(x, y, doc.settings, doc.artboards)
         const node: VecNode = {
           id: nextId('text'),
           type: 'text',
@@ -485,7 +485,7 @@ export function Artboard() {
       return
     }
 
-    const snapped = snapPoint(x, y, doc.settings)
+    const snapped = snapPoint(x, y, doc.settings, doc.artboards)
 
     if (tool === 'text') {
       const node: VecNode = {
@@ -591,13 +591,14 @@ export function Artboard() {
     }
 
     const { x, y } = toLocal(e)
-    const snapped = snapPoint(x, y, doc.settings)
+    const snapped = snapPoint(x, y, doc.settings, doc.artboards)
 
     if (tool === 'pen') {
       setPenCursor(snapped)
       if (penDrag.current) {
         setPenDragNow(snapped)
       }
+      setGuides(snapped.guides)
       return
     }
 
@@ -607,10 +608,12 @@ export function Artboard() {
         pencilPts.current.push(snapped)
         setPencilPreview(pointsToPolylineD(pencilPts.current))
       }
+      setGuides(snapped.guides)
       return
     }
 
     if (!draw.current) return
+    setGuides(snapped.guides)
     if (draw.current.kind === 'area-text') {
       setDraftNode(
         makeAreaTextDraft(
@@ -696,7 +699,7 @@ export function Artboard() {
     }
 
     const { x, y } = toLocal(e)
-    const snapped = snapPoint(x, y, doc.settings)
+    const snapped = snapPoint(x, y, doc.settings, doc.artboards)
 
     if (tool === 'pen' && penDrag.current) {
       const start = penDrag.current
@@ -747,6 +750,7 @@ export function Artboard() {
       const simplified = simplifyPoints(pencilPts.current, 1.75)
       pencilPts.current = []
       setPencilPreview('')
+      setGuides([])
       if (simplified.length >= 2) {
         const node: VecNode = {
           id: nextId('path'),
@@ -780,6 +784,7 @@ export function Artboard() {
         }
         setDraftNode(null)
         draw.current = null
+        setGuides([])
         return
       }
       const n = makeDraft(
@@ -806,6 +811,7 @@ export function Artboard() {
       ) {
         setDraftNode(null)
         draw.current = null
+        setGuides([])
         setShapeDialog({ kind, x: startX, y: startY })
         return
       }
@@ -819,6 +825,7 @@ export function Artboard() {
       }
       setDraftNode(null)
       draw.current = null
+      setGuides([])
     }
   }
 
