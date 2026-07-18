@@ -115,10 +115,14 @@ export function TaglineTicker() {
   }, [])
 
   const text = lineupRef.current[index] ?? TAGLINES[0]!
+  const comicSans = text === 'Comic Sans, but ironic.'
 
   return (
     <span className="menu-bar__tagline-slot" title={text} aria-live="polite">
-      <span className={`menu-bar__tagline menu-bar__tagline--${phase}`} key={index}>
+      <span
+        className={`menu-bar__tagline menu-bar__tagline--${phase}${comicSans ? ' menu-bar__tagline--comic-sans' : ''}`}
+        key={index}
+      >
         {text}
       </span>
     </span>
