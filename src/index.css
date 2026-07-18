@@ -2810,9 +2810,8 @@ select {
   min-height: 0;
   flex: 1;
   display: flex;
-  background:
-    radial-gradient(ellipse at top, color-mix(in srgb, var(--panel) 80%, transparent) 0%, transparent 55%),
-    var(--bg);
+  /* Same void as the SVG pasteboard — no seam when the extent resizes. */
+  background: var(--canvas-pad, var(--bg));
 }
 
 .artboard-host {
@@ -2823,6 +2822,7 @@ select {
   justify-content: center;
   overflow: auto;
   padding: 1rem;
+  background: var(--canvas-pad, var(--bg));
   /* Transparent 1×1 + none — hides OS cursor even when children set pointer/move/resize */
   cursor: url('data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7') 0 0, none !important;
 }
@@ -2882,7 +2882,8 @@ select {
 
 .artboard-svg {
   background: var(--canvas-pad, var(--bg-code));
-  box-shadow: var(--canvas-svg-shadow);
+  /* No outer slab shadow — artboard frames carry their own drop shadow. */
+  box-shadow: none;
   touch-action: none;
   /* Stop OS text selection when dragging tools near <text> nodes */
   user-select: none;
@@ -2944,6 +2945,8 @@ select {
   grid-template-columns: 20px 1fr;
   grid-template-rows: 20px 1fr;
   min-height: 0;
+  background: var(--canvas-pad, var(--bg));
+}
   min-width: 0;
 }
 
