@@ -34,7 +34,6 @@ export const TAGLINES: string[] = [
 
   // Graphic design
   'Kerning: the silent treatment',
-  'Leading questions only',
   'Negative space, positive attitude',
   'CMYK my way through this',
   'Pantone of my problems',
