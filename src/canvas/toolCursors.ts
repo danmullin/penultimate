@@ -1,3 +1,4 @@
+import { assetUrl } from '../assetUrl'
 import type { Tool } from '../types'
 
 /** Cursor asset name under /cursors/{name}.svg */
@@ -76,7 +77,7 @@ export function cursorForTool(tool: Tool): CursorName {
 /** CSS cursor value with hotspot + system fallback. */
 export function cssCursor(name: CursorName): string {
   const h = HOTSPOTS[name]
-  return `url("/cursors/${name}.svg") ${h.x} ${h.y}, ${h.fallback}`
+  return `url("${assetUrl(`cursors/${name}.svg`)}") ${h.x} ${h.y}, ${h.fallback}`
 }
 
 /** Prefer inherit so the host overlay cursor reads through shapes. */

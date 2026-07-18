@@ -1,9 +1,10 @@
 import type { MouseEvent } from 'react'
+import { assetUrl } from '../assetUrl'
 import { useTooltip } from './Tooltip'
 
 /** SVG icon from /icons/{name}.svg (public/). Tinted via CSS mask + currentColor. */
 export function Icon({ name }: { name: string }) {
-  const url = `/icons/${name}.svg`
+  const url = assetUrl(`icons/${name}.svg`)
   return (
     <span
       className={`i i--img i--${name}`}

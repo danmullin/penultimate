@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, type RefObject } from 'react'
+import { assetUrl } from '../assetUrl'
 import type { Tool } from '../types'
 import { cursorForTool, type CursorName } from './toolCursors'
 
@@ -48,7 +49,7 @@ export function ToolCursorOverlay({
     nameRef.current = name
     hotRef.current = HOTSPOT[name]
     const img = imgRef.current
-    if (img) img.src = `/cursors/${name}.svg`
+    if (img) img.src = assetUrl(`cursors/${name}.svg`)
   }, [name])
 
   useEffect(() => {
@@ -104,7 +105,7 @@ export function ToolCursorOverlay({
     <img
       ref={imgRef}
       className="tool-cursor"
-      src={`/cursors/${name}.svg`}
+      src={assetUrl(`cursors/${name}.svg`)}
       alt=""
       width={32}
       height={32}
