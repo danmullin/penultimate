@@ -3,7 +3,7 @@ import { TAGLINES } from '../data/taglines'
 
 const INTERVAL_MS = 14000
 const TRANSITION_MS = 420
-const STORAGE_KEY = 'penultimate-tagline-ticker-v2'
+const STORAGE_KEY = 'penultimate-tagline-ticker-v3'
 
 type Stored = {
   order?: string[]
