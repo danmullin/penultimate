@@ -1523,21 +1523,39 @@ select {
 .shape-fields {
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
+  gap: 0.55rem;
 }
 
 .shape-fields .field-row {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.3rem;
+  gap: 0.55rem;
+}
+
+/* Fill the cell — don’t leave a dead gap beside tiny max-width inputs. */
+.shape-fields .field-inline input[type='number'] {
+  max-width: none;
+  width: 100%;
+}
+
+.shape-fields .field-inline > span {
+  min-width: 0;
 }
 
 .shape-fields__hint,
 .shape-dialog__intro {
-  margin: 0;
+  margin: 0.15rem 0 0;
   font-size: 0.72rem;
   color: var(--muted);
   line-height: 1.35;
+}
+
+.shape-dialog__intro {
+  margin: 0 0 0.65rem;
+}
+
+.shape-dialog__panel {
+  width: min(280px, 100%);
 }
 
 .layers-body {
@@ -2847,10 +2865,6 @@ select {
   font-size: 0.75rem;
   font-family: ui-monospace, Consolas, monospace;
   color: var(--text);
-}
-
-.shape-dialog__panel {
-  width: min(360px, 100%);
 }
 
 .ui-tooltip {

@@ -371,7 +371,7 @@ function NumField({
   step?: number
 }) {
   return (
-    <label className="field-inline">
+    <label className="field-inline field-inline--stack">
       <span>{label}</span>
       <input
         type="number"
