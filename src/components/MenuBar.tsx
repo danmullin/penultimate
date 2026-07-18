@@ -8,6 +8,7 @@ import { useUiTheme } from '../hooks/useUiTheme'
 import { defaultStyle, nextId } from '../store/documentStore'
 import { paintNone } from '../style/paint'
 import { IconButton } from './Icon'
+import { TaglineTicker } from './TaglineTicker'
 
 function AutosaveHint() {
   const autosaveAt = useDocStore((s) => s.autosaveAt)
@@ -45,7 +46,7 @@ export function MenuBar() {
           <span className="menu-bar__brand-p">P</span>
           <span className="menu-bar__brand-rest">ENULTIMATE</span>
         </span>
-        <span className="menu-bar__tagline">Handles worth dragging</span>
+        <TaglineTicker />
       </div>
       <div className="menu-bar__file">
         <input
