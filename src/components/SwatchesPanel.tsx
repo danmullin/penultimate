@@ -64,6 +64,8 @@ function AddSwatchControls({ seed }: { seed: string }) {
   const session = useColorPickerSession()
   /** Color when the popover opened — Cancel restores the well to this. */
   const openHexRef = useRef(seed)
+  /** Selection at open — live preview keeps targeting these even if focus moves. */
+  const targetIdsRef = useRef<string[]>([])
 
   useEffect(() => {
     setDraft(seed)
@@ -72,9 +74,30 @@ function AddSwatchControls({ seed }: { seed: string }) {
   const preview = (hex: string) => {
     setDraft(hex)
     const store = useDocStore.getState()
-    if (store.selectedIds.length === 0) return
+    const ids =
+      targetIdsRef.current.length > 0 ? targetIdsRef.current : store.selectedIds
+    if (ids.length === 0) return
+
     const recordHistory = session.beginChange()
-    store.applyStyleToSelected({ fill: paintSolid(hex) }, recordHistory)
+    const selected = store.selectedIds
+    const sameSelection =
+      ids.length === selected.length && ids.every((id, i) => id === selected[i])
+
+    if (sameSelection) {
+      store.applyStyleToSelected({ fill: paintSolid(hex) }, recordHistory)
+      return
+    }
+
+    if (recordHistory) store.pushHistory()
+    const nodes = { ...store.doc.nodes }
+    let changed = false
+    for (const id of ids) {
+      const n = nodes[id]
+      if (!n || n.locked) continue
+      nodes[id] = { ...n, style: { ...n.style, fill: paintSolid(hex) } }
+      changed = true
+    }
+    if (changed) useDocStore.setState((s) => ({ doc: { ...s.doc, nodes } }))
   }
 
   return (
@@ -83,16 +106,19 @@ function AddSwatchControls({ seed }: { seed: string }) {
       onOpen={() => {
         session.commit()
         openHexRef.current = draftRef.current
+        targetIdsRef.current = [...useDocStore.getState().selectedIds]
       }}
       onChange={preview}
       onCancel={() => {
         session.cancel()
         setDraft(openHexRef.current)
+        targetIdsRef.current = []
       }}
       onCommit={(hex) => {
         session.commit()
         openHexRef.current = hex
         setDraft(hex)
+        targetIdsRef.current = []
       }}
       onAdd={(hex) => useDocStore.getState().addSwatch(hex)}
       addLabel="Add"

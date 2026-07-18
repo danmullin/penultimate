@@ -166,6 +166,22 @@ function ColorPopover({
   const newHex = hsvToHex(hsv)
   const rgb = useMemo(() => hexToRgb(newHex) ?? { r: 0, g: 0, b: 0 }, [newHex])
 
+  const onChangeRef = useRef(onChange)
+  const onCancelRef = useRef(onCancel)
+  const onCommitRef = useRef(onCommit)
+  const onCloseRef = useRef(onClose)
+  onChangeRef.current = onChange
+  onCancelRef.current = onCancel
+  onCommitRef.current = onCommit
+  onCloseRef.current = onClose
+
+  /** Block click-away while scrubbing the spectrum (mousedown can miss contains checks). */
+  const scrubbingRef = useRef(false)
+
+  const emit = (hex: string) => {
+    onChangeRef.current(hex)
+  }
+
   const commit = (next: HSV) => {
     const clamped = {
       h: ((next.h % 360) + 360) % 360,
@@ -176,7 +192,7 @@ function ColorPopover({
     setHsv(clamped)
     const out = hsvToHex(clamped)
     setHexDraft(out.replace(/^#/, ''))
-    onChange(out)
+    emit(out)
   }
 
   const commitHex = (raw: string) => {
@@ -186,7 +202,7 @@ function ColorPopover({
     hsvRef.current = next
     setHsv(next)
     setHexDraft(n.replace(/^#/, ''))
-    onChange(n)
+    emit(n)
     return true
   }
 
@@ -196,7 +212,7 @@ function ColorPopover({
     hsvRef.current = next
     setHsv(next)
     setHexDraft(out.replace(/^#/, ''))
-    onChange(out)
+    emit(out)
   }
 
   const dragSv = (clientX: number, clientY: number) => {
@@ -216,57 +232,73 @@ function ColorPopover({
     commit({ ...hsvRef.current, h: Math.max(0, Math.min(1, t)) * 360 })
   }
 
-  const onSvPointer = (e: ReactPointerEvent) => {
+  const startScrub = (mode: 'sv' | 'hue', e: ReactPointerEvent) => {
     e.preventDefault()
-    ;(e.target as HTMLElement).setPointerCapture(e.pointerId)
-    dragSv(e.clientX, e.clientY)
-  }
+    e.stopPropagation()
+    scrubbingRef.current = true
+    if (mode === 'sv') dragSv(e.clientX, e.clientY)
+    else dragHue(e.clientY)
 
-  const onHuePointer = (e: ReactPointerEvent) => {
-    e.preventDefault()
-    ;(e.target as HTMLElement).setPointerCapture(e.pointerId)
-    dragHue(e.clientY)
+    const onMove = (ev: PointerEvent) => {
+      if (mode === 'sv') dragSv(ev.clientX, ev.clientY)
+      else dragHue(ev.clientY)
+    }
+    const onUp = () => {
+      scrubbingRef.current = false
+      window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerup', onUp)
+      window.removeEventListener('pointercancel', onUp)
+    }
+    window.addEventListener('pointermove', onMove)
+    window.addEventListener('pointerup', onUp)
+    window.addEventListener('pointercancel', onUp)
   }
-
-  const onChangeRef = useRef(onChange)
-  const onCancelRef = useRef(onCancel)
-  const onCommitRef = useRef(onCommit)
-  onChangeRef.current = onChange
-  onCancelRef.current = onCancel
-  onCommitRef.current = onCommit
 
   const cancel = () => {
     if (onCancelRef.current) onCancelRef.current()
     else onChangeRef.current(currentRef.current)
-    onClose()
+    onCloseRef.current()
   }
 
   const confirm = () => {
     const hex = hsvToHex(hsvRef.current)
     onCommitRef.current?.(hex)
-    onClose()
+    onCloseRef.current()
   }
 
   useEffect(() => {
+    const inPicker = (e: Event) => {
+      const path = typeof e.composedPath === 'function' ? e.composedPath() : []
+      if (panelRef.current && path.includes(panelRef.current)) return true
+      if (wellRef.current && path.includes(wellRef.current)) return true
+      const t = e.target as Node | null
+      if (t && panelRef.current?.contains(t)) return true
+      if (t && wellRef.current?.contains(t)) return true
+      return false
+    }
+
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         e.preventDefault()
         cancel()
       }
     }
-    const onDown = (e: MouseEvent) => {
-      const t = e.target as Node
-      if (wellRef.current?.contains(t)) return
-      if (panelRef.current?.contains(t)) return
+    const onPointerDown = (e: PointerEvent) => {
+      if (scrubbingRef.current) return
+      if (inPicker(e)) return
       cancel()
     }
-    window.addEventListener('keydown', onKey)
-    window.addEventListener('mousedown', onDown)
+
+    // Defer so the opening click cannot dismiss immediately.
+    const timer = window.setTimeout(() => {
+      window.addEventListener('keydown', onKey, true)
+      window.addEventListener('pointerdown', onPointerDown, true)
+    }, 0)
     return () => {
-      window.removeEventListener('keydown', onKey)
-      window.removeEventListener('mousedown', onDown)
+      window.clearTimeout(timer)
+      window.removeEventListener('keydown', onKey, true)
+      window.removeEventListener('pointerdown', onPointerDown, true)
     }
-    // Stable dismiss handlers via refs; run once per open mount.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -294,11 +326,7 @@ function ColorPopover({
             ref={svRef}
             className="color-popover__sv"
             style={{ backgroundColor: hueColor }}
-            onPointerDown={onSvPointer}
-            onPointerMove={(e) => {
-              if (e.buttons !== 1) return
-              dragSv(e.clientX, e.clientY)
-            }}
+            onPointerDown={(e) => startScrub('sv', e)}
           >
             <div className="color-popover__sv-white" />
             <div className="color-popover__sv-black" />
@@ -311,11 +339,7 @@ function ColorPopover({
           <div
             ref={hueRef}
             className="color-popover__hue"
-            onPointerDown={onHuePointer}
-            onPointerMove={(e) => {
-              if (e.buttons !== 1) return
-              dragHue(e.clientY)
-            }}
+            onPointerDown={(e) => startScrub('hue', e)}
           >
             <span
               className="color-popover__hue-tri color-popover__hue-tri--l"
