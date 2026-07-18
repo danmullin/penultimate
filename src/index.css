@@ -3070,19 +3070,20 @@ select {
 }
 
 .ruler__label--v {
-  left: 1px;
+  /* Anchor at tick (top) + inset from left; center box then rotate so
+     multi-digit labels share one axis and stay inside the 20px gutter. */
+  left: 7px;
   right: auto;
   top: 0;
-  /* Keep horizontal glyph metrics, then rotate — vertical-lr wrecks digit tracking. */
   writing-mode: horizontal-tb;
   text-orientation: mixed;
   letter-spacing: 0;
   font-kerning: none;
   font-variant-numeric: tabular-nums;
   font-feature-settings: 'kern' 0, 'liga' 0;
-  text-align: left;
-  transform: translateY(-50%) rotate(-90deg);
-  transform-origin: left center;
+  text-align: center;
+  transform: translate(-50%, -50%) rotate(-90deg);
+  transform-origin: center center;
 }
 
 .field-row {
