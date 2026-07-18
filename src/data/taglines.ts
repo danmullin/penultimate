@@ -14,7 +14,6 @@ export const TAGLINES: string[] = [
   // Nerdy-cute
   'Undo is forever. Commitment is Ctrl+S.',
   'Pathfinder of least resistance',
-  'Point taken.',
   'Absolute unit of a toolbelt',
   'Boolean? I barely know her.',
   'Live preview of good decisions',
