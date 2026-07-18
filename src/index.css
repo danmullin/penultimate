@@ -1172,6 +1172,13 @@ select {
   font-size: 0.72rem;
   font-weight: 600;
   color: var(--text);
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+}
+
+.color-popover__title:active {
+  cursor: grabbing;
 }
 
 /* Photoshop grid:
@@ -2749,6 +2756,13 @@ select {
   border-bottom: 1px solid var(--border);
   background: var(--chrome);
   flex-shrink: 0;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+}
+
+.settings-modal__header:active {
+  cursor: grabbing;
 }
 
 .settings-modal__title {

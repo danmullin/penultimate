@@ -16,6 +16,7 @@ import {
   rgbToHex,
   type HSV,
 } from '../color/colorMath'
+import { useTitleBarDrag } from '../hooks/useTitleBarDrag'
 
 type Props = {
   value: string
@@ -148,6 +149,11 @@ function ColorPopover({
   hsvRef.current = hsv
   const svRef = useRef<HTMLDivElement>(null)
   const hueRef = useRef<HTMLDivElement>(null)
+  const { pos, reset, titleBarProps } = useTitleBarDrag({ left, top })
+
+  useLayoutEffect(() => {
+    reset({ left, top })
+  }, [left, top, reset])
 
   const newHex = hsvToHex(hsv)
   const rgb = useMemo(() => hexToRgb(newHex) ?? { r: 0, g: 0, b: 0 }, [newHex])
@@ -228,11 +234,12 @@ function ColorPopover({
     <div
       ref={panelRef}
       className="color-popover"
-      style={{ top, left }}
+      data-drag-panel
+      style={{ top: pos?.top ?? top, left: pos?.left ?? left }}
       role="dialog"
       aria-labelledby={labelId}
     >
-      <div className="color-popover__title" id={labelId}>
+      <div className="color-popover__title" id={labelId} {...titleBarProps}>
         Color Picker
       </div>
 

@@ -2,6 +2,7 @@ import { useEffect, useId, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { useDocStore } from '../store/documentStore'
 import { useUiTheme } from '../hooks/useUiTheme'
+import { useTitleBarDrag } from '../hooks/useTitleBarDrag'
 import { IconButton } from './Icon'
 
 /**
@@ -21,9 +22,11 @@ export function SettingsModal() {
   const { theme, setTheme, themes } = useUiTheme()
   const titleId = useId()
   const panelRef = useRef<HTMLDivElement>(null)
+  const { pos, reset, titleBarProps } = useTitleBarDrag()
 
   useEffect(() => {
     if (!open) return
+    reset(null)
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         e.preventDefault()
@@ -38,7 +41,7 @@ export function SettingsModal() {
       window.removeEventListener('keydown', onKey, true)
       if (prev instanceof HTMLElement) prev.focus()
     }
-  }, [open, setSettingsOpen])
+  }, [open, setSettingsOpen, reset])
 
   if (!open) return null
 
@@ -53,11 +56,17 @@ export function SettingsModal() {
       <div
         ref={panelRef}
         className="settings-modal__panel"
+        data-drag-panel
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
+        style={
+          pos
+            ? { position: 'fixed', left: pos.left, top: pos.top, margin: 0 }
+            : undefined
+        }
       >
-        <div className="settings-modal__header">
+        <div className="settings-modal__header" {...titleBarProps}>
           <h2 id={titleId} className="settings-modal__title">
             Preferences
           </h2>

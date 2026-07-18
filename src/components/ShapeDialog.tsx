@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useDocStore } from '../store/documentStore'
+import { useTitleBarDrag } from '../hooks/useTitleBarDrag'
 import { nextId } from '../ops/group'
 import {
   createShapeFromValues,
@@ -23,11 +24,13 @@ export function ShapeDialog() {
   const [values, setValues] = useState<ShapeCreateValues>(getLastShapeValues)
   const valuesRef = useRef(values)
   valuesRef.current = values
+  const { pos, reset, titleBarProps } = useTitleBarDrag()
 
   useEffect(() => {
     if (!dialog) return
     setValues(getLastShapeValues())
-  }, [dialog])
+    reset(null)
+  }, [dialog, reset])
 
   useEffect(() => {
     if (!dialog) return
@@ -84,11 +87,17 @@ export function ShapeDialog() {
       <div
         ref={panelRef}
         className="settings-modal__panel shape-dialog__panel"
+        data-drag-panel
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
+        style={
+          pos
+            ? { position: 'fixed', left: pos.left, top: pos.top, margin: 0 }
+            : undefined
+        }
       >
-        <div className="settings-modal__header">
+        <div className="settings-modal__header" {...titleBarProps}>
           <h2 id={titleId} className="settings-modal__title">
             {shapeToolTitle(dialog.kind)}
           </h2>

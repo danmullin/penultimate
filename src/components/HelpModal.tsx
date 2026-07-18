@@ -2,6 +2,7 @@ import { useEffect, useId, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { FEATURE_SECTIONS } from '../data/features'
 import { useDocStore } from '../store/documentStore'
+import { useTitleBarDrag } from '../hooks/useTitleBarDrag'
 import { IconButton } from './Icon'
 
 /** In-app feature + shortcut reference (same catalog as README). */
@@ -10,9 +11,11 @@ export function HelpModal() {
   const setHelpOpen = useDocStore((s) => s.setHelpOpen)
   const titleId = useId()
   const panelRef = useRef<HTMLDivElement>(null)
+  const { pos, reset, titleBarProps } = useTitleBarDrag()
 
   useEffect(() => {
     if (!open) return
+    reset(null)
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         e.preventDefault()
@@ -23,7 +26,7 @@ export function HelpModal() {
     window.addEventListener('keydown', onKey, true)
     panelRef.current?.querySelector<HTMLElement>('button')?.focus()
     return () => window.removeEventListener('keydown', onKey, true)
-  }, [open, setHelpOpen])
+  }, [open, setHelpOpen, reset])
 
   if (!open) return null
 
@@ -38,11 +41,17 @@ export function HelpModal() {
       <div
         ref={panelRef}
         className="settings-modal__panel help-modal__panel"
+        data-drag-panel
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
+        style={
+          pos
+            ? { position: 'fixed', left: pos.left, top: pos.top, margin: 0 }
+            : undefined
+        }
       >
-        <div className="settings-modal__header">
+        <div className="settings-modal__header" {...titleBarProps}>
           <h2 id={titleId} className="settings-modal__title">
             Features &amp; shortcuts
           </h2>
