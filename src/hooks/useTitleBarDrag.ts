@@ -53,7 +53,6 @@ export function useTitleBarDrag(initial?: DragPos | null) {
     const pad = 8
     const panel = (e.currentTarget.closest('[data-drag-panel]') as HTMLElement | null)
     const w = panel?.offsetWidth ?? 0
-    const h = panel?.offsetHeight ?? 0
     let left = d.origLeft + (e.clientX - d.startX)
     let top = d.origTop + (e.clientY - d.startY)
     left = Math.min(window.innerWidth - pad - Math.min(w, 40), Math.max(pad - Math.max(0, w - 80), left))
