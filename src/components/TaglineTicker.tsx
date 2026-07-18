@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { TAGLINES } from '../data/taglines'
 
-const INTERVAL_MS = 6500
+const INTERVAL_MS = 14000
 const TRANSITION_MS = 420
 
 function shuffleRest(canonical: string, rest: string[]): string[] {
