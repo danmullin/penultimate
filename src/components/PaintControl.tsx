@@ -175,9 +175,14 @@ export function PaintControl({ label, paint, onChange, allowNone = true }: Props
                 onClick={() => onChange(linearPaintWithAngle(paint, 90))}
               />
               <IconButton
-                icon="angle-diag"
-                label="45° — diagonal"
+                icon="angle-diag2"
+                label="45° — diagonal ↘"
                 onClick={() => onChange(linearPaintWithAngle(paint, 45))}
+              />
+              <IconButton
+                icon="angle-diag"
+                label="135° — diagonal ↙"
+                onClick={() => onChange(linearPaintWithAngle(paint, 135))}
               />
             </div>
           )}

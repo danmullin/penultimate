@@ -2062,6 +2062,17 @@ select {
     1px 1px / 12px 12px no-repeat;
 }
 
+.i--angle-diag2 {
+  background: linear-gradient(
+      45deg,
+      transparent 45%,
+      currentColor 45%,
+      currentColor 55%,
+      transparent 55%
+    )
+    1px 1px / 12px 12px no-repeat;
+}
+
 .i--tool-select {
   clip-path: polygon(15% 5%, 90% 52%, 55% 52%, 70% 95%, 52% 100%, 38% 55%, 15% 72%);
   background: currentColor;
