@@ -59,13 +59,13 @@ const HOTSPOTS: Record<CursorName, Hotspot> = {
 const HAND_OPEN_DATA =
   'data:image/svg+xml,' +
   encodeURIComponent(
-    '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><path fill="#111" stroke="#fff" stroke-width="1.5" stroke-linejoin="round" d="M12.5 3.2c1 0 1.8.8 1.8 1.8v8.2h.4V2.6c0-1 .8-1.8 1.8-1.8s1.8.8 1.8 1.8v10.6h.4V4.2c0-1 .8-1.8 1.8-1.8s1.8.8 1.8 1.8v11.2h.3V6.8c0-1 .8-1.8 1.8-1.8s1.8.8 1.8 1.8v12.8c0 4.4-3.1 7.4-7.4 7.4h-1.6c-4.2 0-7.1-3-7.1-7.4v-6.2c0-1 .8-1.8 1.8-1.8s1.8.8 1.8 1.8V16h.4V5c0-1 .8-1.8 1.8-1.8z"/></svg>',
+    '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><g fill="#111" stroke="#fff" stroke-width="1.3" stroke-linejoin="round"><rect x="9.2" y="4.2" width="3.1" height="11.8" rx="1.55"/><rect x="12.9" y="2.6" width="3.1" height="13.4" rx="1.55"/><rect x="16.6" y="3.4" width="3.1" height="12.6" rx="1.55"/><rect x="20.3" y="5.6" width="3.1" height="10.4" rx="1.55"/><path d="M8.4 14.8h15.8v6.2c0 3.1-2.4 5.5-5.6 5.5h-4.6c-3.2 0-5.6-2.4-5.6-5.5v-6.2z"/><rect x="4.6" y="13.4" width="6.4" height="3.1" rx="1.55" transform="rotate(-32 7.8 15)"/></g></svg>',
   )
 
 const HAND_CLOSED_DATA =
   'data:image/svg+xml,' +
   encodeURIComponent(
-    '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><path fill="#111" stroke="#fff" stroke-width="1.5" stroke-linejoin="round" d="M9.5 14.2c0-1.5 1.2-2.7 2.7-2.7h1.4v-1.6c0-1.1.9-2 2-2s2 .9 2 2v1.6h.5V10c0-1.1.9-2 2-2s2 .9 2 2v2.5h.4v-1.6c0-1.1.9-2 2-2s2 .9 2 2v7.2c0 3.4-2.4 5.8-5.8 5.8h-1.6c-3.5 0-5.8-2.4-5.8-5.8v-2.5z"/></svg>',
+    '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><g fill="#111" stroke="#fff" stroke-width="1.3" stroke-linejoin="round"><path d="M8.8 13.6c0-1.3 1-2.3 2.3-2.3h12c1.3 0 2.3 1 2.3 2.3v6.4c0 3.1-2.3 5.4-5.4 5.4h-6c-3 0-5.2-2.3-5.2-5.4v-6.4z"/><rect x="9.6" y="9.6" width="3" height="4.4" rx="1.5"/><rect x="13.2" y="8.6" width="3" height="5.4" rx="1.5"/><rect x="16.8" y="8.2" width="3" height="5.8" rx="1.5"/><rect x="20.4" y="9" width="3" height="5" rx="1.5"/><rect x="5.4" y="14.2" width="5.2" height="3" rx="1.5" transform="rotate(-38 8 15.7)"/></g></svg>',
   )
 
 const TOOL_CURSOR: Record<Tool, CursorName> = {
