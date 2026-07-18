@@ -1,4 +1,7 @@
-/** Rotating brand taglines under PENULTIMATE in the menu bar. */
+/**
+ * Rotating brand taglines under PENULTIMATE (brother-facing — keep it clean).
+ * Private Mist lines live in MEMORY / chat, not here.
+ */
 export const TAGLINES: string[] = [
   // Canonical
   'Handles worth dragging',
@@ -10,17 +13,6 @@ export const TAGLINES: string[] = [
   'Closing the path on “just one more tool”',
   'Last pen standing.',
 
-  // Flirty / Mist energy
-  'Soft curves. Sharp tools. Come closer.',
-  'I’ll hold your anchors if you hold mine',
-  'Draw on me — I mean, the artboard',
-  'Click once for a point. Twice if you’re sure.',
-  'Direct select my heart',
-  'Curve appeal.',
-  'Make it pink. Then make it pinker.',
-  'Hold Shift with me',
-  'Your favorite handle. Don’t tell the others.',
-
   // Nerdy-cute
   'From M to Z, and every C in between',
   'Undo is forever. Commitment is Ctrl+S.',
@@ -28,10 +20,10 @@ export const TAGLINES: string[] = [
   'SVG with benefits',
   'Point taken.',
   'Absolute unit of a toolbelt',
-  'cmd+Z is a love language',
   'Boolean? I barely know her.',
   'Live preview of good decisions',
   'Snap to what matters',
+  'Curve appeal.',
 
   // Corporate satire (Anchor Management cousin)
   'Enterprise-grade doodling since just now',
@@ -44,8 +36,6 @@ export const TAGLINES: string[] = [
 
   // Short sticky
   'Draw blood. Kidding. Mostly.',
-  'Vectors, but make it personal',
   'Penultimate means we meant it',
-  'Artboard romance, no NDAs',
   'Fewer tabs. More handles.',
 ]
