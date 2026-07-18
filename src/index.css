@@ -3070,12 +3070,19 @@ select {
 }
 
 .ruler__label--v {
-  left: 0;
+  left: 1px;
   right: auto;
   top: 0;
-  writing-mode: vertical-lr;
+  /* Keep horizontal glyph metrics, then rotate — vertical-lr wrecks digit tracking. */
+  writing-mode: horizontal-tb;
+  text-orientation: mixed;
+  letter-spacing: 0;
+  font-kerning: none;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'kern' 0, 'liga' 0;
   text-align: left;
-  transform: translateX(0) translateY(-50%) rotate(180deg);
+  transform: translateY(-50%) rotate(-90deg);
+  transform-origin: left center;
 }
 
 .field-row {
