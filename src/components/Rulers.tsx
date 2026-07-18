@@ -144,10 +144,19 @@ export function Rulers({
             key={`h${idx}`}
             className={`ruler__tick${t.major ? ' ruler__tick--major' : ''}`}
             style={{ left: t.pos, height: tickLen(t.major) }}
-          >
-            {t.label ? <span className="ruler__label">{t.label}</span> : null}
-          </span>
+          />
         ))}
+        {hTicks.map((t, idx) =>
+          t.label ? (
+            <span
+              key={`hl${idx}`}
+              className="ruler__label"
+              style={{ left: t.pos }}
+            >
+              {t.label}
+            </span>
+          ) : null,
+        )}
       </div>
       <div className="ruler ruler--v" onPointerDown={onVRulerDown}>
         {vTicks.map((t, idx) => (
@@ -155,10 +164,19 @@ export function Rulers({
             key={`v${idx}`}
             className={`ruler__tick ruler__tick--v${t.major ? ' ruler__tick--major' : ''}`}
             style={{ top: t.pos, width: tickLen(t.major) }}
-          >
-            {t.label ? <span className="ruler__label">{t.label}</span> : null}
-          </span>
+          />
         ))}
+        {vTicks.map((t, idx) =>
+          t.label ? (
+            <span
+              key={`vl${idx}`}
+              className="ruler__label ruler__label--v"
+              style={{ top: t.pos }}
+            >
+              {t.label}
+            </span>
+          ) : null,
+        )}
       </div>
       <div ref={canvasRef} className="rulers-host__canvas">
         {children}

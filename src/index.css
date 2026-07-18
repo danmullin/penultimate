@@ -2690,7 +2690,8 @@ select {
   position: absolute;
   bottom: 0;
   width: 1px;
-  background: var(--text-dim);
+  background: var(--muted);
+  z-index: 0;
 }
 
 .ruler__tick--v {
@@ -2700,23 +2701,33 @@ select {
 }
 
 .ruler__tick--major {
-  background: var(--muted);
+  background: color-mix(in srgb, var(--text) 70%, var(--muted));
 }
 
 .ruler__label {
   position: absolute;
   left: 0;
   top: 1px;
-  font-size: 8px;
+  z-index: 2;
+  font-size: 9px;
+  font-weight: 700;
   line-height: 1;
-  color: var(--text-dim);
+  letter-spacing: 0.01em;
+  color: var(--text);
   white-space: nowrap;
   pointer-events: none;
   /* Center label on the tick line */
   transform: translateX(-50%);
+  text-shadow:
+    0 0 2px var(--chrome),
+    0 0 3px var(--chrome),
+    1px 0 0 var(--chrome),
+    -1px 0 0 var(--chrome),
+    0 1px 0 var(--chrome),
+    0 -1px 0 var(--chrome);
 }
 
-.ruler__tick--v .ruler__label {
+.ruler__label--v {
   left: 2px;
   top: 0;
   writing-mode: vertical-lr;
