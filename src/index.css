@@ -2945,9 +2945,8 @@ select {
   grid-template-columns: 20px 1fr;
   grid-template-rows: 20px 1fr;
   min-height: 0;
-  background: var(--canvas-pad, var(--bg));
-}
   min-width: 0;
+  background: var(--canvas-pad, var(--bg));
 }
 
 /* Keep the shell mounted; collapse chrome so the artboard is not remounted. */
