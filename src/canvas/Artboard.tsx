@@ -1,7 +1,13 @@
 import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent, type MouseEvent as ReactMouseEvent } from 'react'
 import { defaultStyle, defaultTextStyle, nextId, snapPoint, useDocStore } from '../store/documentStore'
 import { paintNone } from '../style/paint'
-import { documentExtent, type VecNode } from '../types'
+import {
+  documentExtent,
+  parentOf,
+  selectionBBox,
+  idsInMarquee,
+  normalizeMarquee,
+} from '../geometry'
 import { ToolCursorOverlay } from './ToolCursorOverlay'
 import { GradientDefs } from './GradientDefs'
 import { NodeView, isCreateTool } from './NodeViews'
@@ -9,10 +15,9 @@ import { PathAnchorOverlay } from './PathAnchorOverlay'
 import { SelectionOverlay } from './SelectionOverlay'
 import { TextEditOverlay } from './TextEditOverlay'
 import { Rulers } from '../components/Rulers'
-import { parentOf, selectionBBox, idsInMarquee, normalizeMarquee } from '../geometry'
 import { pointsToPolylineD, simplifyPoints } from '../ops/pencil'
 import { polygonPath, starPath } from '../ops/shapes'
-import type { BBox } from '../types'
+import type { BBox, VecNode } from '../types'
 
 export function Artboard() {
   const doc = useDocStore((s) => s.doc)
@@ -83,7 +88,10 @@ export function Artboard() {
   /** Live draft shown in SVG while the overlay caret is active — avoids baseline jump. */
   const [liveEditText, setLiveEditText] = useState<string | null>(null)
 
-  const extent = useMemo(() => documentExtent(doc), [doc.artboards, doc.artboard])
+  const extent = useMemo(
+    () => documentExtent(doc),
+    [doc.artboards, doc.artboard, doc.nodes, doc.zOrder],
+  )
 
   const beginTextEdit = (id: string, opts?: { isNew?: boolean }) => {
     const n = useDocStore.getState().doc.nodes[id]
@@ -804,6 +812,24 @@ export function Artboard() {
               : undefined
           }
         />
+        <defs>
+          <filter
+            id="artboard-frame-shadow"
+            x="-8%"
+            y="-8%"
+            width="116%"
+            height="116%"
+            colorInterpolationFilters="sRGB"
+          >
+            <feDropShadow
+              dx={0}
+              dy={6 / scale}
+              stdDeviation={10 / scale}
+              floodColor="var(--canvas-frame-shadow, #000)"
+              floodOpacity={0.28}
+            />
+          </filter>
+        </defs>
         {/* Workspace chrome behind artboards */}
         <rect
           x={extent.x}
@@ -813,7 +839,7 @@ export function Artboard() {
           fill="var(--canvas-pad, #1a1612)"
         />
         {doc.artboards.map((ab) => (
-          <g key={ab.id}>
+          <g key={ab.id} filter="url(#artboard-frame-shadow)">
             <rect
               x={ab.x}
               y={ab.y}
@@ -836,7 +862,7 @@ export function Artboard() {
               y1={l.y1}
               x2={l.x2}
               y2={l.y2}
-              stroke="rgba(255,255,255,0.06)"
+              stroke="var(--canvas-grid, rgba(255,255,255,0.06))"
               strokeWidth={1}
             />
           ))}

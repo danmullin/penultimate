@@ -213,9 +213,18 @@ function collectDefs(doc: VectorDocument): string {
 }
 
 export function documentToSvg(doc: VectorDocument): string {
+  const frame =
+    doc.artboards.find((a) => a.id === doc.activeArtboardId) ?? doc.artboards[0]
+  const x = frame?.x ?? 0
+  const y = frame?.y ?? 0
+  const width = frame?.width ?? doc.artboard.width
+  const height = frame?.height ?? doc.artboard.height
+  const background =
+    frame?.background !== undefined ? frame.background : doc.artboard.background
+
   const bg =
-    doc.artboard.background != null
-      ? `<rect width="100%" height="100%" fill="${doc.artboard.background}" />`
+    background != null
+      ? `<rect x="0" y="0" width="${width}" height="${height}" fill="${background}" />`
       : ''
   const body = doc.zOrder
     .map((id) => doc.nodes[id])
@@ -223,11 +232,17 @@ export function documentToSvg(doc: VectorDocument): string {
     .map((n) => renderNode(n, doc))
     .join('\n')
 
+  // Crop to the active artboard frame: translate world coords into frame-local space.
+  const content =
+    x !== 0 || y !== 0
+      ? `<g transform="translate(${-x}, ${-y})">\n${body}\n</g>`
+      : body
+
   return `<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="${doc.artboard.width}" height="${doc.artboard.height}" viewBox="0 0 ${doc.artboard.width} ${doc.artboard.height}">
+<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
 ${collectDefs(doc)}
 ${bg}
-${body}
+${content}
 </svg>`
 }
 

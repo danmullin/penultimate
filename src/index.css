@@ -24,6 +24,10 @@
   --checker: #4a3c32;
   --glow: transparent;
   --brand-shadow: none;
+  --canvas-pad: #14100c;
+  --canvas-grid: rgba(255, 255, 255, 0.06);
+  --canvas-frame-shadow: #000000;
+  --canvas-svg-shadow: 0 0 0 1px var(--border), 0 18px 40px rgba(0, 0, 0, 0.35);
   font-family: 'Segoe UI', system-ui, sans-serif;
   line-height: 1.4;
   color: var(--text);
@@ -53,6 +57,10 @@
   --checker: #5a2d9a;
   --glow: 0 0 12px rgba(255, 45, 149, 0.45);
   --brand-shadow: 0 0 18px rgba(0, 240, 255, 0.55);
+  --canvas-pad: #0e0618;
+  --canvas-grid: rgba(255, 255, 255, 0.07);
+  --canvas-frame-shadow: #000000;
+  --canvas-svg-shadow: 0 0 0 1px var(--border), 0 18px 40px rgba(0, 0, 0, 0.45);
 }
 
 /* Adobe Illustrator–inspired dark Spectrum chrome */
@@ -78,6 +86,10 @@
   --checker: #4b4b4b;
   --glow: transparent;
   --brand-shadow: none;
+  --canvas-pad: #161616;
+  --canvas-grid: rgba(255, 255, 255, 0.06);
+  --canvas-frame-shadow: #000000;
+  --canvas-svg-shadow: 0 0 0 1px var(--border), 0 18px 40px rgba(0, 0, 0, 0.4);
 }
 
 /* Paper — light studio desk, ink on cream */
@@ -103,6 +115,10 @@
   --checker: #d4c8b4;
   --glow: transparent;
   --brand-shadow: none;
+  --canvas-pad: #e8e0d2;
+  --canvas-grid: rgba(42, 36, 28, 0.08);
+  --canvas-frame-shadow: #5a4a38;
+  --canvas-svg-shadow: 0 0 0 1px var(--border), 0 10px 28px rgba(42, 36, 28, 0.12);
 }
 
 /* Nord — frosty arctic blues */
@@ -128,6 +144,10 @@
   --checker: #4c566a;
   --glow: transparent;
   --brand-shadow: none;
+  --canvas-pad: #222831;
+  --canvas-grid: rgba(236, 239, 244, 0.06);
+  --canvas-frame-shadow: #000000;
+  --canvas-svg-shadow: 0 0 0 1px var(--border), 0 18px 40px rgba(0, 0, 0, 0.4);
 }
 
 /* Matcha — soft sage studio */
@@ -153,6 +173,10 @@
   --checker: #4a6350;
   --glow: transparent;
   --brand-shadow: none;
+  --canvas-pad: #121810;
+  --canvas-grid: rgba(232, 240, 228, 0.06);
+  --canvas-frame-shadow: #000000;
+  --canvas-svg-shadow: 0 0 0 1px var(--border), 0 18px 40px rgba(0, 0, 0, 0.4);
 }
 
 /* Terminal — phosphor green CRT */
@@ -178,6 +202,10 @@
   --checker: #1f3a1f;
   --glow: 0 0 10px rgba(51, 255, 102, 0.35);
   --brand-shadow: 0 0 14px rgba(51, 255, 102, 0.55);
+  --canvas-pad: #030503;
+  --canvas-grid: rgba(51, 255, 102, 0.08);
+  --canvas-frame-shadow: #000000;
+  --canvas-svg-shadow: 0 0 0 1px var(--border), 0 18px 40px rgba(0, 0, 0, 0.5);
 }
 
 /* Sunset — coral dusk over warm sand */
@@ -203,6 +231,10 @@
   --checker: #7a4054;
   --glow: 0 0 12px rgba(255, 122, 89, 0.3);
   --brand-shadow: 0 0 14px rgba(255, 179, 71, 0.4);
+  --canvas-pad: #1a0e14;
+  --canvas-grid: rgba(255, 232, 222, 0.06);
+  --canvas-frame-shadow: #000000;
+  --canvas-svg-shadow: 0 0 0 1px var(--border), 0 18px 40px rgba(0, 0, 0, 0.4);
 }
 
 /* Harbor — deep teal night water */
@@ -228,6 +260,10 @@
   --checker: #2a5a66;
   --glow: transparent;
   --brand-shadow: none;
+  --canvas-pad: #071014;
+  --canvas-grid: rgba(228, 244, 246, 0.06);
+  --canvas-frame-shadow: #000000;
+  --canvas-svg-shadow: 0 0 0 1px var(--border), 0 18px 40px rgba(0, 0, 0, 0.4);
 }
 
 /* Blush — soft rose neon lounge */
@@ -253,6 +289,10 @@
   --checker: #6e4454;
   --glow: 0 0 12px rgba(242, 167, 192, 0.35);
   --brand-shadow: 0 0 14px rgba(255, 214, 227, 0.4);
+  --canvas-pad: #180e12;
+  --canvas-grid: rgba(255, 240, 244, 0.06);
+  --canvas-frame-shadow: #000000;
+  --canvas-svg-shadow: 0 0 0 1px var(--border), 0 18px 40px rgba(0, 0, 0, 0.4);
 }
 
 * {
@@ -2811,8 +2851,8 @@ select {
 }
 
 .artboard-svg {
-  background: var(--bg-code);
-  box-shadow: 0 0 0 1px var(--border), 0 18px 40px rgba(0, 0, 0, 0.4);
+  background: var(--canvas-pad, var(--bg-code));
+  box-shadow: var(--canvas-svg-shadow);
   touch-action: none;
   /* Stop OS text selection when dragging tools near <text> nodes */
   user-select: none;

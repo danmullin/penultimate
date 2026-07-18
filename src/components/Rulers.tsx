@@ -6,7 +6,7 @@ import {
   type PointerEvent as ReactPointerEvent,
 } from 'react'
 import { useDocStore } from '../store/documentStore'
-import { documentExtent } from '../types'
+import { documentExtent } from '../geometry'
 
 const RULER = 20
 

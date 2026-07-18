@@ -507,8 +507,11 @@ export function syncArtboardFromActive(doc: VectorDocument): VectorDocument {
   }
 }
 
-/** Union bounds of all artboard frames (document canvas extent). */
-export function documentExtent(doc: VectorDocument): BBox {
+/** Pasteboard padding around artboard frames (document units). */
+export const PASTEBOARD_MARGIN = 200
+
+/** Union bounds of all artboard frames (no pasteboard / objects). */
+export function artboardFramesExtent(doc: VectorDocument): BBox {
   if (doc.artboards.length === 0) {
     return { x: 0, y: 0, width: doc.artboard.width, height: doc.artboard.height }
   }
