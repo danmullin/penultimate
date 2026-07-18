@@ -12,7 +12,6 @@ export const TAGLINES: string[] = [
   'Closing the path on “just one more tool”',
 
   // Nerdy-cute
-  'From M to Z, and every C in between',
   'Undo is forever. Commitment is Ctrl+S.',
   'Pathfinder of least resistance',
   'Point taken.',
