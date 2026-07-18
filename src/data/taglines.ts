@@ -11,6 +11,18 @@ export const TAGLINES: string[] = [
   'One last Bézier. We mean it this time.',
   'Closing the path on “just one more tool”',
 
+  // Pen / path
+  'Click once. Drag forever.',
+  'Anchor management, rebranded',
+  'Join endpoints, not meetings',
+  'Smooth enough to lie about',
+
+  // Tool jokes
+  'Direct select your problems',
+  'Eyedropper of truth',
+  'Group therapy for overlapping shapes',
+  'Layers so deep we need a map',
+
   // Nerdy-cute
   'Undo is forever. Commitment is Ctrl+S.',
   'Pathfinder of least resistance',
@@ -19,6 +31,9 @@ export const TAGLINES: string[] = [
   'Live preview of good decisions',
   'Snap to what matters',
   'Curve appeal.',
+  'Make it, then make it again',
+  'Soft save. Hard opinions.',
+  'Still not Illustrator. On purpose.',
 
   // Corporate satire (Anchor Management cousin)
   'Enterprise-grade doodling since just now',
@@ -28,6 +43,9 @@ export const TAGLINES: string[] = [
   'Now with 12% more “I’ll fix it in post”',
   'Synergizing paths since you opened the tab',
   'KPI: cute shapes shipped',
+  'Ideating rectangles at scale',
+  'Roadmap: more handles',
+  'Stakeholder-approved curves',
 
   // Short sticky
   'Penultimate means we meant it',
