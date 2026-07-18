@@ -1,7 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, type RefObject } from 'react'
-import { assetUrl } from '../assetUrl'
 import type { Tool } from '../types'
-import { cursorForTool, type CursorName } from './toolCursors'
+import { cursorForTool, cursorImageUrl, type CursorName } from './toolCursors'
 
 const HOTSPOT: Record<CursorName, { x: number; y: number }> = {
   select: { x: 5, y: 2 },
@@ -37,25 +36,32 @@ export function ToolCursorOverlay({
   tool,
   hostRef,
   override,
-  hidden = false,
 }: {
   tool: Tool
   hostRef: RefObject<HTMLElement | null>
   override?: CursorName | null
-  /** Hide the custom cursor (e.g. hand uses OS grab). */
-  hidden?: boolean
 }) {
   const imgRef = useRef<HTMLImageElement>(null)
   const nameRef = useRef<CursorName>(cursorForTool(tool))
   const hotRef = useRef(HOTSPOT[nameRef.current])
+  const lastPos = useRef<{ x: number; y: number } | null>(null)
   const name = override ?? cursorForTool(tool)
 
   useLayoutEffect(() => {
     nameRef.current = name
     hotRef.current = HOTSPOT[name] ?? { x: 16, y: 16 }
     const img = imgRef.current
-    if (img) img.src = assetUrl(`cursors/${name}.svg`)
-  }, [name])
+    const host = hostRef.current
+    if (img) img.src = cursorImageUrl(name)
+    // Space / H while the pointer is idle over the canvas: keep the cursor visible.
+    const pos = lastPos.current
+    if (!img || !host || !pos) return
+    const r = host.getBoundingClientRect()
+    if (pos.x < r.left || pos.x > r.right || pos.y < r.top || pos.y > r.bottom) return
+    const hot = hotRef.current
+    img.style.opacity = '1'
+    img.style.transform = `translate3d(${pos.x - hot.x}px, ${pos.y - hot.y}px, 0)`
+  }, [name, hostRef])
 
   useEffect(() => {
     const host = hostRef.current
@@ -63,6 +69,7 @@ export function ToolCursorOverlay({
     if (!host || !img) return
 
     const place = (clientX: number, clientY: number) => {
+      lastPos.current = { x: clientX, y: clientY }
       const hot = hotRef.current ?? { x: 16, y: 16 }
       img.style.transform = `translate3d(${clientX - hot.x}px, ${clientY - hot.y}px, 0)`
     }
@@ -71,11 +78,6 @@ export function ToolCursorOverlay({
       img.style.opacity = '0'
       // Park off-screen so a zero-opacity cursor can't create overflow/hit targets
       img.style.transform = 'translate3d(-100px, -100px, 0)'
-    }
-
-    if (hidden) {
-      hide()
-      return
     }
 
     const onMove = (e: PointerEvent) => {
@@ -109,18 +111,17 @@ export function ToolCursorOverlay({
       host.removeEventListener('pointerenter', onEnter)
       host.removeEventListener('pointerleave', hide)
     }
-  }, [hostRef, hidden])
+  }, [hostRef])
 
   return (
     <img
       ref={imgRef}
       className="tool-cursor"
-      src={assetUrl(`cursors/${name}.svg`)}
+      src={cursorImageUrl(name)}
       alt=""
       width={32}
       height={32}
       draggable={false}
-      hidden={hidden}
     />
   )
 }

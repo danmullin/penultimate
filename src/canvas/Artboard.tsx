@@ -869,19 +869,20 @@ export function Artboard() {
     <Rulers scale={scale} camera={cam}>
     <div
       ref={hostRef}
-      className={`artboard-host${outlineMode ? ' artboard-host--outline' : ''}${handMode ? ' artboard-host--hand' : ''}${handDragging ? ' artboard-host--hand-drag' : ''}`}
+      className={`artboard-host${outlineMode ? ' artboard-host--outline' : ''}`}
     >
       <ToolCursorOverlay
         tool={tool}
         hostRef={hostRef}
         override={
-          handMode
-            ? null
-            : penClose
-              ? 'pen-close'
-              : null
+          handDragging
+            ? 'hand-closed'
+            : handMode
+              ? 'hand'
+              : penClose
+                ? 'pen-close'
+                : null
         }
-        hidden={handMode}
       />
       <svg
         ref={svgRef}
