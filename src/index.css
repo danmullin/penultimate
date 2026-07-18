@@ -1282,26 +1282,26 @@ select {
   display: flex;
   flex-direction: column;
   width: 3.6rem;
-  border: 1px solid var(--border);
   align-self: start;
 }
 
-.color-popover__compare-block {
-  display: flex;
-  flex-direction: column;
-}
-
-.color-popover__compare-block span {
-  padding: 0.1rem 0.25rem;
+.color-popover__compare-label {
+  padding: 0.1rem 0.15rem;
   font-size: 0.62rem;
   color: var(--muted);
-  background: var(--panel-2);
   text-transform: lowercase;
+  text-align: center;
+  line-height: 1.2;
 }
 
 .color-popover__compare-swatch {
-  height: 1.7rem;
+  height: 1.85rem;
+  border: 1px solid var(--border);
   cursor: pointer;
+}
+
+.color-popover__compare-swatch + .color-popover__compare-swatch {
+  border-top: none;
 }
 
 .color-popover__actions {

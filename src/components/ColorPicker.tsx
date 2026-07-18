@@ -282,20 +282,16 @@ function ColorPopover({
         </div>
 
         <div className="color-popover__compare-stack">
-          <div className="color-popover__compare-block">
-            <span>new</span>
-            <div className="color-popover__compare-swatch" style={{ background: newHex }} />
-          </div>
-          <div className="color-popover__compare-block">
-            <span>current</span>
-            <div
-              className="color-popover__compare-swatch"
-              style={{ background: currentRef.current }}
-              onClick={() => commitHex(currentRef.current)}
-              title="Reset to current"
-              role="button"
-            />
-          </div>
+          <span className="color-popover__compare-label">new</span>
+          <div className="color-popover__compare-swatch" style={{ background: newHex }} />
+          <div
+            className="color-popover__compare-swatch"
+            style={{ background: currentRef.current }}
+            onClick={() => commitHex(currentRef.current)}
+            title="Reset to current"
+            role="button"
+          />
+          <span className="color-popover__compare-label">current</span>
         </div>
 
         <div className="color-popover__actions">
