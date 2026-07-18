@@ -1523,6 +1523,37 @@ select {
   background: var(--hover);
 }
 
+.color-popover__add {
+  width: 100%;
+  margin-top: 0.55rem;
+  height: 1.7rem;
+  border: 1px solid var(--border);
+  background: var(--panel-2);
+  color: var(--text);
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.color-popover__add:hover {
+  background: var(--hover);
+  border-color: var(--border-strong);
+}
+
+.color-popover__add:active {
+  transform: translateY(0.5px);
+}
+
+.color-popover__add--mac {
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--accent, #6b8cae) 22%, var(--panel-2));
+  border-color: color-mix(in srgb, var(--accent, #6b8cae) 35%, var(--border));
+}
+
+.color-popover__add--win {
+  border-radius: 0;
+}
+
 .shape-fields {
   display: flex;
   flex-direction: column;

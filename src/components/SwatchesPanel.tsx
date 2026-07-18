@@ -55,7 +55,7 @@ export function SwatchesPanel() {
   )
 }
 
-/** In-app picker + explicit Add — never opens the macOS Color Panel. */
+/** Well opens the picker; Add lives inside so you can keep picking. */
 function AddSwatchControls({ seed }: { seed: string }) {
   const [draft, setDraft] = useState(seed)
 
@@ -64,24 +64,15 @@ function AddSwatchControls({ seed }: { seed: string }) {
   }, [seed])
 
   return (
-    <div className="swatch-add-row">
-      <ColorPicker
-        value={draft}
-        onChange={setDraft}
-        aria-label="Pick a color"
-        title="Pick a color"
-        size="sm"
-      />
-      <button
-        type="button"
-        className="swatch-add__commit"
-        title="Add color to Penultimate swatches"
-        aria-label="Add color to swatches"
-        onClick={() => useDocStore.getState().addSwatch(draft)}
-      >
-        Add
-      </button>
-    </div>
+    <ColorPicker
+      value={draft}
+      onChange={setDraft}
+      onAdd={(hex) => useDocStore.getState().addSwatch(hex)}
+      addLabel="Add to Swatches"
+      aria-label="Add swatch"
+      title="Pick colors · Add stays open until you close"
+      size="sm"
+    />
   )
 }
 

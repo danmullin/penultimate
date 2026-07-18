@@ -22,6 +22,9 @@ export type ColorPickerPlatform = 'mac' | 'win'
 type Props = {
   value: string
   onChange: (hex: string) => void
+  /** When set, shows Add inside the popover (stays open after add). */
+  onAdd?: (hex: string) => void
+  addLabel?: string
   'aria-label'?: string
   title?: string
   className?: string
@@ -55,6 +58,8 @@ export function detectColorPickerPlatform(): ColorPickerPlatform {
 export function ColorPicker({
   value,
   onChange,
+  onAdd,
+  addLabel = 'Add',
   'aria-label': ariaLabel = 'Color',
   title,
   className,
@@ -74,7 +79,7 @@ export function ColorPicker({
       const r = wellRef.current!.getBoundingClientRect()
       const pad = 8
       const width = platform === 'mac' ? 248 : 292
-      const height = platform === 'mac' ? 300 : 340
+      const height = platform === 'mac' ? (onAdd ? 340 : 300) : onAdd ? 380 : 340
       let left = r.left
       let top = r.bottom + 6
       if (left + width > window.innerWidth - pad) left = window.innerWidth - width - pad
@@ -89,7 +94,7 @@ export function ColorPicker({
       window.removeEventListener('resize', place)
       window.removeEventListener('scroll', place, true)
     }
-  }, [open, platform])
+  }, [open, platform, onAdd])
 
   useEffect(() => {
     if (!open) return
@@ -132,6 +137,8 @@ export function ColorPicker({
             top={pos.top}
             left={pos.left}
             onChange={onChange}
+            onAdd={onAdd}
+            addLabel={addLabel}
             onClose={() => setOpen(false)}
           />,
           document.body,
@@ -147,6 +154,8 @@ function ColorPopover({
   top,
   left,
   onChange,
+  onAdd,
+  addLabel,
   onClose,
 }: {
   panelRef: React.RefObject<HTMLDivElement | null>
@@ -155,6 +164,8 @@ function ColorPopover({
   top: number
   left: number
   onChange: (hex: string) => void
+  onAdd?: (hex: string) => void
+  addLabel: string
   onClose: () => void
 }) {
   const labelId = useId()
@@ -403,6 +414,16 @@ function ColorPopover({
             </button>
           )}
         </div>
+      )}
+
+      {onAdd && (
+        <button
+          type="button"
+          className={`color-popover__add color-popover__add--${platform}`}
+          onClick={() => onAdd(hsvToHex(hsv))}
+        >
+          {addLabel}
+        </button>
       )}
     </div>
   )
