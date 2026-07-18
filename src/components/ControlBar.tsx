@@ -24,6 +24,7 @@ const TOOL_LABELS: Record<Tool, string> = {
   'area-text': 'Area Type',
   scissors: 'Scissors',
   shear: 'Shear',
+  hand: 'Hand',
   zoom: 'Zoom',
 }
 
@@ -117,9 +118,11 @@ export function ControlBar() {
               ? 'tool-scissors'
               : tool === 'shear'
                 ? 'tool-shear'
-                : tool === 'zoom'
-                  ? 'tool-zoom'
-                  : `tool-${tool}`
+                : tool === 'hand'
+                  ? 'tool-hand'
+                  : tool === 'zoom'
+                    ? 'tool-zoom'
+                    : `tool-${tool}`
 
   return (
     <div className="control-bar">

@@ -45,6 +45,8 @@ export function Artboard() {
   const zoomPinned = useDocStore((s) => s.zoomPinned)
   const fitNonce = useDocStore((s) => s.fitNonce)
   const setZoom = useDocStore((s) => s.setZoom)
+  const spaceHand = useDocStore((s) => s.spaceHand)
+  const handMode = tool === 'hand' || spaceHand
   const hostRef = useRef<HTMLDivElement>(null)
   const svgRef = useRef<SVGSVGElement>(null)
   const zoomRef = useRef(zoom)
@@ -82,6 +84,13 @@ export function Artboard() {
     startLocalY: number
     originBox: BBox
   } | null>(null)
+  const panDrag = useRef<{
+    clientX: number
+    clientY: number
+    camX: number
+    camY: number
+  } | null>(null)
+  const [handDragging, setHandDragging] = useState(false)
   const marquee = useRef<{
     x0: number
     y0: number
@@ -294,9 +303,25 @@ export function Artboard() {
     return { x: local.x, y: local.y }
   }
 
+  const beginPan = (e: ReactPointerEvent) => {
+    e.stopPropagation()
+    svgRef.current?.setPointerCapture(e.pointerId)
+    panDrag.current = {
+      clientX: e.clientX,
+      clientY: e.clientY,
+      camX: camRef.current.x,
+      camY: camRef.current.y,
+    }
+    setHandDragging(true)
+  }
+
   const onNodePointerDown = (id: string, e: ReactPointerEvent) => {
     window.getSelection()?.removeAllRanges()
     if (editingTextId) return
+    if (handMode) {
+      beginPan(e)
+      return
+    }
     if (tool === 'zoom') {
       e.stopPropagation()
       const factor = e.altKey || e.shiftKey ? 1 / 1.5 : 1.5
@@ -435,6 +460,10 @@ export function Artboard() {
       // Blur on the input will commit; don't start another gesture.
       return
     }
+    if (handMode) {
+      beginPan(e)
+      return
+    }
     if (tool === 'zoom') {
       const factor = e.altKey || e.shiftKey ? 1 / 1.5 : 1.5
       zoomAtClient(e.clientX, e.clientY, zoomRef.current * factor)
@@ -520,6 +549,17 @@ export function Artboard() {
   }
 
   const onPointerMove = (e: ReactPointerEvent) => {
+    if (panDrag.current) {
+      const z = zoomRef.current
+      const dx = (e.clientX - panDrag.current.clientX) / z
+      const dy = (e.clientY - panDrag.current.clientY) / z
+      setCam({
+        x: panDrag.current.camX - dx,
+        y: panDrag.current.camY - dy,
+      })
+      return
+    }
+
     if (moveDrag.current) {
       const local = toLocal(e)
       const dx = local.x - moveDrag.current.startLocalX
@@ -595,6 +635,15 @@ export function Artboard() {
   }
 
   const onPointerUp = (e: ReactPointerEvent) => {
+    if (panDrag.current) {
+      panDrag.current = null
+      setHandDragging(false)
+      if (svgRef.current?.hasPointerCapture(e.pointerId)) {
+        svgRef.current.releasePointerCapture(e.pointerId)
+      }
+      return
+    }
+
     if (moveDrag.current) {
       moveDrag.current = null
       setGuides([])
@@ -819,7 +868,19 @@ export function Artboard() {
   return (
     <Rulers scale={scale} camera={cam}>
     <div ref={hostRef} className={`artboard-host${outlineMode ? ' artboard-host--outline' : ''}`}>
-      <ToolCursorOverlay tool={tool} hostRef={hostRef} override={penClose ? 'pen-close' : null} />
+      <ToolCursorOverlay
+        tool={tool}
+        hostRef={hostRef}
+        override={
+          handDragging
+            ? 'hand-closed'
+            : handMode
+              ? 'hand'
+              : penClose
+                ? 'pen-close'
+                : null
+        }
+      />
       <svg
         ref={svgRef}
         className="artboard-svg artboard-svg--custom-cursor"
@@ -893,7 +954,7 @@ export function Artboard() {
             />
           </g>
         ))}
-        <g pointerEvents={isCreateTool(tool) ? 'none' : 'auto'}>
+        <g pointerEvents={isCreateTool(tool) || handMode ? 'none' : 'auto'}>
           {doc.zOrder.map((id) => {
             const node = doc.nodes[id]
             if (!node) return null

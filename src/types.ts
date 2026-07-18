@@ -28,6 +28,7 @@ export type Tool =
   | 'eyedropper'
   | 'scissors'
   | 'shear'
+  | 'hand'
   | 'zoom'
 
 export type StrokeLinecap = 'butt' | 'round' | 'square'

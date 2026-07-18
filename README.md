@@ -74,6 +74,7 @@ That keeps the README and the in-app Help panel (`?` / `F1`) aligned.
 | Polygon | Y |
 | Star | J |
 | Shear | S |
+| Hand | H · hold Space — Drag to pan the canvas |
 | Zoom | Z — Click zoom in · Alt/Shift+click zoom out |
 
 ### Edit
@@ -101,6 +102,7 @@ That keeps the README and the in-app Help panel (`?` / `F1`) aligned.
 | Zoom out | Ctrl+- · Ctrl+scroll |
 | Fit artboard | Ctrl+0 |
 | Zoom 100% | Ctrl+1 |
+| Pan canvas | Space+drag · Hand tool · scroll wheel — Hold Space for temporary hand |
 | Outline mode | ` (backtick) |
 | Show rulers | Preferences or View toolbar |
 | Show grid / snap / smart guides | Preferences (Ctrl+, / Ctrl+K) |

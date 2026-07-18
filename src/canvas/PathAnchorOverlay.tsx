@@ -4,6 +4,7 @@ import { anchorsToPath, parseAnchors } from '../ops/pathEdit'
 /** Anchor handles for direct-selection path editing. */
 export function PathAnchorOverlay({ scale }: { scale: number }) {
   const tool = useDocStore((s) => s.tool)
+  const spaceHand = useDocStore((s) => s.spaceHand)
   const doc = useDocStore((s) => s.doc)
   const selectedIds = useDocStore((s) => s.selectedIds)
   const movePathAnchor = useDocStore((s) => s.movePathAnchor)
@@ -13,7 +14,7 @@ export function PathAnchorOverlay({ scale }: { scale: number }) {
   const convertPathAnchor = useDocStore((s) => s.convertPathAnchor)
   const addPathAnchor = useDocStore((s) => s.addPathAnchor)
 
-  if (tool !== 'direct' || selectedIds.length !== 1) return null
+  if (tool !== 'direct' || spaceHand || selectedIds.length !== 1) return null
   const node = doc.nodes[selectedIds[0]]
   if (!node || node.type !== 'path' || node.locked) return null
 

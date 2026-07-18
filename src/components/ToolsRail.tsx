@@ -19,6 +19,7 @@ const TOOLS: Array<{ id: Tool; label: string; shortcut: string; icon: string }> 
   { id: 'polygon', label: 'Polygon', shortcut: 'Y', icon: 'tool-polygon' },
   { id: 'star', label: 'Star', shortcut: 'J', icon: 'tool-star' },
   { id: 'shear', label: 'Shear', shortcut: 'S', icon: 'tool-shear' },
+  { id: 'hand', label: 'Hand', shortcut: 'H · hold Space', icon: 'tool-hand' },
   { id: 'zoom', label: 'Zoom', shortcut: 'Z', icon: 'tool-zoom' },
 ]
 

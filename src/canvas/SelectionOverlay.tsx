@@ -60,6 +60,7 @@ export function SelectionOverlay({
   const doc = useDocStore((s) => s.doc)
   const selectedIds = useDocStore((s) => s.selectedIds)
   const tool = useDocStore((s) => s.tool)
+  const spaceHand = useDocStore((s) => s.spaceHand)
   const aspectLock = useDocStore((s) => s.aspectLock)
   const pushHistory = useDocStore((s) => s.pushHistory)
   const moveSelectedTo = useDocStore((s) => s.moveSelectedTo)
@@ -168,6 +169,7 @@ export function SelectionOverlay({
   if (selectedIds.length === 0) return null
   // Keep bounds visible after create / Type so Appearance still has a clear target
   // even while the create tool stays active (Illustrator-style).
+  if (tool === 'hand' || spaceHand) return null
   if (tool !== 'select' && tool !== 'text' && tool !== 'area-text' && !isCreateTool(tool)) {
     return null
   }

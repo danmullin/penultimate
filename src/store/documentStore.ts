@@ -60,6 +60,8 @@ type DocState = {
   doc: VectorDocument
   selectedIds: string[]
   tool: Tool
+  /** Space held — temporary hand pan without switching the tool rail. */
+  spaceHand: boolean
   guides: SnapGuide[]
   penDraft: PenDraft | null
   draftNode: VecNode | null
@@ -88,6 +90,7 @@ type DocState = {
   autosaveAt: number | null
 
   setTool: (tool: Tool) => void
+  setSpaceHand: (on: boolean) => void
   setGuides: (guides: SnapGuide[]) => void
   setDraftNode: (node: VecNode | null) => void
   select: (ids: string[], additive?: boolean) => void
@@ -253,6 +256,7 @@ export const useDocStore = create<DocState>((set, get) => ({
   doc: createEmptyDocument(),
   selectedIds: [],
   tool: 'select',
+  spaceHand: false,
   guides: [],
   penDraft: null,
   draftNode: null,
@@ -271,6 +275,7 @@ export const useDocStore = create<DocState>((set, get) => ({
   autosaveAt: null,
 
   setTool: (tool) => set({ tool, penDraft: tool === 'pen' ? { points: [] } : null }),
+  setSpaceHand: (on) => set({ spaceHand: on }),
   setGuides: (guides) => set({ guides }),
   setDraftNode: (node) => set({ draftNode: node }),
   setOutlineMode: (outlineMode) => set({ outlineMode }),

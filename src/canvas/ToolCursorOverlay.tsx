@@ -25,6 +25,8 @@ const HOTSPOT: Record<CursorName, { x: number; y: number }> = {
   scissors: { x: 16, y: 16 },
   shear: { x: 16, y: 16 },
   zoom: { x: 11, y: 11 },
+  hand: { x: 16, y: 16 },
+  'hand-closed': { x: 16, y: 16 },
 }
 
 /**

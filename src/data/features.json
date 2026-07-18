@@ -17,6 +17,11 @@
       { "name": "Polygon", "shortcut": "Y" },
       { "name": "Star", "shortcut": "J" },
       { "name": "Shear", "shortcut": "S" },
+      {
+        "name": "Hand",
+        "shortcut": "H · hold Space",
+        "note": "Drag to pan the canvas"
+      },
       { "name": "Zoom", "shortcut": "Z", "note": "Click zoom in · Alt/Shift+click zoom out" }
     ]
   },
@@ -48,6 +53,11 @@
       { "name": "Zoom out", "shortcut": "Ctrl+- · Ctrl+scroll" },
       { "name": "Fit artboard", "shortcut": "Ctrl+0" },
       { "name": "Zoom 100%", "shortcut": "Ctrl+1" },
+      {
+        "name": "Pan canvas",
+        "shortcut": "Space+drag · Hand tool · scroll wheel",
+        "note": "Hold Space for temporary hand"
+      },
       { "name": "Outline mode", "shortcut": "` (backtick)" },
       { "name": "Show rulers", "note": "Preferences or View toolbar" },
       { "name": "Show grid / snap / smart guides", "note": "Preferences (Ctrl+, / Ctrl+K)" },

@@ -23,6 +23,8 @@ export type CursorName =
   | 'scissors'
   | 'shear'
   | 'zoom'
+  | 'hand'
+  | 'hand-closed'
   | 'area-text'
 
 type Hotspot = { x: number; y: number; fallback: string }
@@ -49,6 +51,8 @@ const HOTSPOTS: Record<CursorName, Hotspot> = {
   scissors: { x: 16, y: 16, fallback: 'crosshair' },
   shear: { x: 16, y: 16, fallback: 'ew-resize' },
   zoom: { x: 11, y: 11, fallback: 'zoom-in' },
+  hand: { x: 16, y: 16, fallback: 'grab' },
+  'hand-closed': { x: 16, y: 16, fallback: 'grabbing' },
 }
 
 const TOOL_CURSOR: Record<Tool, CursorName> = {
@@ -67,6 +71,7 @@ const TOOL_CURSOR: Record<Tool, CursorName> = {
   star: 'star',
   scissors: 'scissors',
   shear: 'shear',
+  hand: 'hand',
   zoom: 'zoom',
 }
 

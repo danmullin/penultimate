@@ -31,6 +31,14 @@ export function useEditorShortcuts(): void {
       if (store.settingsOpen || store.helpOpen || store.shapeDialog) return
       const mod = e.metaKey || e.ctrlKey
 
+      // Hold Space — temporary hand pan (Illustrator-style).
+      if (e.code === 'Space' || e.key === ' ') {
+        if (e.repeat) return
+        e.preventDefault()
+        store.setSpaceHand(true)
+        return
+      }
+
       if (store.tool === 'pen') {
         if (e.key === 'Enter') {
           e.preventDefault()
@@ -139,6 +147,7 @@ export function useEditorShortcuts(): void {
       }
       if (e.key === 'c' || e.key === 'C') store.setTool('scissors')
       if (e.key === 's' || e.key === 'S') store.setTool('shear')
+      if (e.key === 'h' || e.key === 'H') store.setTool('hand')
       if (e.key === 'z' || e.key === 'Z') store.setTool('zoom')
       if (e.key === '`' || e.key === '~') {
         e.preventDefault()
@@ -184,12 +193,26 @@ export function useEditorShortcuts(): void {
         store.nudgeSelected(0, step)
       }
     }
+
+    const onKeyUp = (e: KeyboardEvent) => {
+      if (e.code === 'Space' || e.key === ' ') {
+        useDocStore.getState().setSpaceHand(false)
+      }
+    }
+
+    const clearSpaceHand = () => useDocStore.getState().setSpaceHand(false)
+
     window.addEventListener('keydown', onKey)
+    window.addEventListener('keyup', onKeyUp)
+    window.addEventListener('blur', clearSpaceHand)
     return () => {
       window.removeEventListener('keydown', onKey)
+      window.removeEventListener('keyup', onKeyUp)
+      window.removeEventListener('blur', clearSpaceHand)
       window.removeEventListener('wheel', blockBrowserZoomWheel)
       document.removeEventListener('gesturestart', blockGesture as EventListener)
       document.removeEventListener('gesturechange', blockGesture as EventListener)
+      clearSpaceHand()
     }
   }, [])
 }
