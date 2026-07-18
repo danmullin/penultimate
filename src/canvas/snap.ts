@@ -135,6 +135,123 @@ export function snapBBox(
   return { x: Math.round(x), y: Math.round(y), guides }
 }
 
+export type ResizeEdges = {
+  left: boolean
+  right: boolean
+  top: boolean
+  bottom: boolean
+}
+
+/**
+ * Snap free edges of a resize toward artboard / neighbor / guide lines.
+ * Anchored edges stay fixed; free edges magnetize within snapThreshold.
+ */
+export function snapResizeBBox(
+  box: BBox,
+  edges: ResizeEdges,
+  others: BBox[],
+  artboards: ArtboardSnapBounds[],
+  settings: DocSettings,
+  manualGuides: SnapGuide[] = [],
+): { box: BBox; guides: SnapGuide[] } {
+  const min = 4
+  let left = box.x
+  let right = box.x + box.width
+  let top = box.y
+  let bottom = box.y + box.height
+  const guides: SnapGuide[] = []
+  let snappedL = false
+  let snappedR = false
+  let snappedT = false
+  let snappedB = false
+
+  if (settings.snapToNeighbors) {
+    const { xs: abXs, ys: abYs } = artboardAxisTargets(artboards)
+    const xs = [...abXs]
+    const ys = [...abYs]
+    for (const r of others) {
+      xs.push(r.x, r.x + r.width / 2, r.x + r.width)
+      ys.push(r.y, r.y + r.height / 2, r.y + r.height)
+    }
+    for (const g of manualGuides) {
+      if (g.orientation === 'vertical') xs.push(g.position)
+      else ys.push(g.position)
+    }
+    const threshold = settings.snapThreshold
+
+    if (edges.left) {
+      const s = snapValue(left, xs, threshold)
+      if (s.snapped) {
+        left = s.value
+        snappedL = true
+        guides.push({ orientation: 'vertical', position: s.target! })
+      }
+    }
+    if (edges.right) {
+      const s = snapValue(right, xs, threshold)
+      if (s.snapped) {
+        right = s.value
+        snappedR = true
+        if (!guides.some((g) => g.orientation === 'vertical' && g.position === s.target)) {
+          guides.push({ orientation: 'vertical', position: s.target! })
+        }
+      }
+    }
+    if (edges.top) {
+      const s = snapValue(top, ys, threshold)
+      if (s.snapped) {
+        top = s.value
+        snappedT = true
+        guides.push({ orientation: 'horizontal', position: s.target! })
+      }
+    }
+    if (edges.bottom) {
+      const s = snapValue(bottom, ys, threshold)
+      if (s.snapped) {
+        bottom = s.value
+        snappedB = true
+        if (!guides.some((g) => g.orientation === 'horizontal' && g.position === s.target)) {
+          guides.push({ orientation: 'horizontal', position: s.target! })
+        }
+      }
+    }
+  }
+
+  if (settings.snapToGrid && settings.gridSize > 0) {
+    const g = settings.gridSize
+    if (edges.left && !snappedL) left = Math.round(left / g) * g
+    if (edges.right && !snappedR) right = Math.round(right / g) * g
+    if (edges.top && !snappedT) top = Math.round(top / g) * g
+    if (edges.bottom && !snappedB) bottom = Math.round(bottom / g) * g
+  } else {
+    if (edges.left && !snappedL) left = Math.round(left)
+    if (edges.right && !snappedR) right = Math.round(right)
+    if (edges.top && !snappedT) top = Math.round(top)
+    if (edges.bottom && !snappedB) bottom = Math.round(bottom)
+  }
+
+  if (right < left + min) {
+    if (edges.right && !edges.left) right = left + min
+    else if (edges.left && !edges.right) left = right - min
+    else right = left + min
+  }
+  if (bottom < top + min) {
+    if (edges.bottom && !edges.top) bottom = top + min
+    else if (edges.top && !edges.bottom) top = bottom - min
+    else bottom = top + min
+  }
+
+  return {
+    box: {
+      x: left,
+      y: top,
+      width: right - left,
+      height: bottom - top,
+    },
+    guides,
+  }
+}
+
 /**
  * Point snap for creating shapes / pen. Magnetic artboard edges+centers when
  * smart guides (`snapToNeighbors`) are on; grid fills in remaining axes.

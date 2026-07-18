@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
-import { selectionBBox } from '../geometry'
+import { nodeBBox, parentOf, selectionBBox } from '../geometry'
 import { useDocStore } from '../store/documentStore'
+import { snapResizeBBox } from './snap'
 import { isCreateTool } from './NodeViews'
 
 type Handle = 'nw' | 'ne' | 'sw' | 'se' | 'n' | 'e' | 's' | 'w' | 'rotate'
@@ -145,6 +146,53 @@ export function SelectionOverlay({
         }
       }
 
+      const edges = {
+        left: kind.includes('w'),
+        right: kind.includes('e'),
+        top: kind.includes('n'),
+        bottom: kind.includes('s'),
+      }
+      const state = useDocStore.getState()
+      const liveDoc = state.doc
+      const liveSelected = state.selectedIds
+      const others = Object.values(liveDoc.nodes)
+        .filter(
+          (n) =>
+            n.visible &&
+            !liveSelected.includes(n.id) &&
+            !parentOf(n.id, liveDoc),
+        )
+        .map((n) => nodeBBox(n, liveDoc))
+      const snapped = snapResizeBBox(
+        { x, y, width, height },
+        edges,
+        others,
+        liveDoc.artboards,
+        liveDoc.settings,
+        liveDoc.manualGuides,
+      )
+      ;({ x, y, width, height } = snapped.box)
+
+      // Re-apply aspect after edge snap so magnetized edges keep the ratio.
+      if (lock && d.originBox.width > 0 && d.originBox.height > 0) {
+        const ratio = d.originBox.width / d.originBox.height
+        const isCorner =
+          kind === 'nw' || kind === 'ne' || kind === 'sw' || kind === 'se'
+        const isEdgeH = kind === 'e' || kind === 'w'
+        const isEdgeV = kind === 'n' || kind === 's'
+        if (isCorner || isEdgeH) {
+          height = Math.max(4, width / ratio)
+          if (kind.includes('n')) y = d.originBox.y + d.originBox.height - height
+          if (kind === 'e' || kind === 'w') {
+            y = d.originBox.y + (d.originBox.height - height) / 2
+          }
+        } else if (isEdgeV) {
+          width = Math.max(4, height * ratio)
+          x = d.originBox.x + (d.originBox.width - width) / 2
+        }
+      }
+
+      setGuides(snapped.guides)
       resizeSelectionTo({ x, y, width, height })
     }
 
