@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
 import { selectionBBox } from '../geometry'
 import { useDocStore } from '../store/documentStore'
+import { isCreateTool } from './NodeViews'
 
 type Handle = 'nw' | 'ne' | 'sw' | 'se' | 'n' | 'e' | 's' | 'w' | 'rotate'
 
@@ -168,13 +169,9 @@ export function SelectionOverlay({
   }, [moveSelectedTo, resizeSelectionTo, rotateSelected, setGuides])
 
   if (selectedIds.length === 0) return null
-  // Keep bounds visible after Type edit (Escape) so font/appearance changes
-  // still have a clear selected target — not only while the Selection tool is active.
-  if (
-    tool !== 'select' &&
-    tool !== 'text' &&
-    tool !== 'area-text'
-  ) {
+  // Keep bounds visible after create / Type so Appearance still has a clear target
+  // even while the create tool stays active (Illustrator-style).
+  if (tool !== 'select' && tool !== 'text' && tool !== 'area-text' && !isCreateTool(tool)) {
     return null
   }
   const box = selectionBBox(selectedIds, doc)
