@@ -13,6 +13,9 @@ const RULER = 20
 /**
  * Top + left rulers. Drag from a ruler onto the canvas to place a manual guide.
  * Tick positions track the live SVG (center/padding/scroll), not the pane origin.
+ *
+ * The host shell always stays mounted so toggling rulers does not remount the
+ * artboard (which would drop wheel zoom listeners and kick auto-fit).
  */
 export function Rulers({
   scale,
@@ -61,33 +64,33 @@ export function Rulers({
     }
   }, [showRulers, scale, extent.x, extent.y, extent.width, extent.height])
 
-  if (!showRulers) return <>{children}</>
-
   const tickLen = (major: boolean) => (major ? 8 : 4)
 
   const hTicks: Array<{ pos: number; major: boolean; label?: string }> = []
   const vTicks: Array<{ pos: number; major: boolean; label?: string }> = []
-  const step = doc.settings.gridSize > 0 ? doc.settings.gridSize : 16
-  const majorEvery = 5
-  let i = 0
-  for (let x = Math.ceil(extent.x / step) * step; x <= extent.x + extent.width; x += step) {
-    const screen = origin.x + (x - extent.x) * scale
-    hTicks.push({
-      pos: screen,
-      major: i % majorEvery === 0,
-      label: i % majorEvery === 0 ? String(Math.round(x)) : undefined,
-    })
-    i++
-  }
-  i = 0
-  for (let y = Math.ceil(extent.y / step) * step; y <= extent.y + extent.height; y += step) {
-    const screen = origin.y + (y - extent.y) * scale
-    vTicks.push({
-      pos: screen,
-      major: i % majorEvery === 0,
-      label: i % majorEvery === 0 ? String(Math.round(y)) : undefined,
-    })
-    i++
+  if (showRulers) {
+    const step = doc.settings.gridSize > 0 ? doc.settings.gridSize : 16
+    const majorEvery = 5
+    let i = 0
+    for (let x = Math.ceil(extent.x / step) * step; x <= extent.x + extent.width; x += step) {
+      const screen = origin.x + (x - extent.x) * scale
+      hTicks.push({
+        pos: screen,
+        major: i % majorEvery === 0,
+        label: i % majorEvery === 0 ? String(Math.round(x)) : undefined,
+      })
+      i++
+    }
+    i = 0
+    for (let y = Math.ceil(extent.y / step) * step; y <= extent.y + extent.height; y += step) {
+      const screen = origin.y + (y - extent.y) * scale
+      vTicks.push({
+        pos: screen,
+        major: i % majorEvery === 0,
+        label: i % majorEvery === 0 ? String(Math.round(y)) : undefined,
+      })
+      i++
+    }
   }
 
   const docPointFromClient = (clientX: number, clientY: number) => {
@@ -136,9 +139,16 @@ export function Rulers({
   }
 
   return (
-    <div ref={hostRef} className="rulers-host">
-      <div className="ruler ruler--corner" />
-      <div className="ruler ruler--h" onPointerDown={onHRulerDown}>
+    <div
+      ref={hostRef}
+      className={`rulers-host${showRulers ? '' : ' rulers-host--hidden'}`}
+    >
+      <div className="ruler ruler--corner" aria-hidden={!showRulers} />
+      <div
+        className="ruler ruler--h"
+        onPointerDown={showRulers ? onHRulerDown : undefined}
+        aria-hidden={!showRulers}
+      >
         {hTicks.map((t, idx) => (
           <span
             key={`h${idx}`}
@@ -158,7 +168,11 @@ export function Rulers({
           ) : null,
         )}
       </div>
-      <div className="ruler ruler--v" onPointerDown={onVRulerDown}>
+      <div
+        className="ruler ruler--v"
+        onPointerDown={showRulers ? onVRulerDown : undefined}
+        aria-hidden={!showRulers}
+      >
         {vTicks.map((t, idx) => (
           <span
             key={`v${idx}`}

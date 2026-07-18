@@ -144,13 +144,19 @@ export function Artboard() {
   }
 
   useEffect(() => {
-    const el = hostRef.current
-    if (!el) return
+    const host = hostRef.current
+    if (!host) return
+    // Observe the stable rulers shell (not the artboard pane). Toggling rulers
+    // changes artboard-host size but not the shell — so we don't auto-refit /
+    // steal zoom when chrome shows or hides.
+    const shell =
+      (host.closest('.rulers-host') as HTMLElement | null) ?? host
 
     const fit = () => {
       const pad = 48
-      const sx = (el.clientWidth - pad) / extent.width
-      const sy = (el.clientHeight - pad) / extent.height
+      const chrome = shell.classList.contains('rulers-host--hidden') ? 0 : 20
+      const sx = (shell.clientWidth - pad - chrome) / extent.width
+      const sy = (shell.clientHeight - pad - chrome) / extent.height
       const next = Math.min(64, Math.max(0.05, Math.min(sx, sy)))
       setZoom(next, false)
     }
@@ -160,7 +166,7 @@ export function Artboard() {
     const ro = new ResizeObserver(() => {
       if (!useDocStore.getState().zoomPinned) fit()
     })
-    ro.observe(el)
+    ro.observe(shell)
     return () => ro.disconnect()
   }, [extent.width, extent.height, fitNonce, zoomPinned, setZoom])
 

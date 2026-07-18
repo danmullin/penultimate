@@ -2702,6 +2702,17 @@ select {
   min-width: 0;
 }
 
+/* Keep the shell mounted; collapse chrome so the artboard is not remounted. */
+.rulers-host--hidden {
+  grid-template-columns: 0 1fr;
+  grid-template-rows: 0 1fr;
+}
+
+.rulers-host--hidden .ruler {
+  visibility: hidden;
+  pointer-events: none;
+}
+
 .rulers-host__canvas {
   grid-column: 2;
   grid-row: 2;
