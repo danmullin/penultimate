@@ -170,6 +170,7 @@ type DocState = {
   convertPathAnchor: (id: string, anchorIndex: number) => void
 
   addSwatch: (color: string) => void
+  addSwatches: (colors: string[]) => void
   removeSwatch: (color: string) => void
   applySwatch: (color: string, target: 'fill' | 'stroke') => void
 
@@ -1032,12 +1033,26 @@ export const useDocStore = create<DocState>((set, get) => ({
   cancelPen: () => set({ penDraft: { points: [] } }),
 
   addSwatch: (color) => {
-    const c = normalizeSwatchColor(color)
-    if (!c) return
+    get().addSwatches([color])
+  },
+
+  addSwatches: (colors) => {
+    const normalized = colors
+      .map((c) => normalizeSwatchColor(c))
+      .filter((c): c is string => Boolean(c))
+    if (normalized.length === 0) return
     set((s) => {
-      const existing = s.doc.swatches.map((x) => x.toLowerCase())
-      if (existing.includes(c)) return s
-      return { doc: { ...s.doc, swatches: [...s.doc.swatches, c] } }
+      const existing = new Set(s.doc.swatches.map((x) => x.toLowerCase()))
+      const next = [...s.doc.swatches]
+      let added = false
+      for (const c of normalized) {
+        if (existing.has(c)) continue
+        existing.add(c)
+        next.push(c)
+        added = true
+      }
+      if (!added) return s
+      return { doc: { ...s.doc, swatches: next } }
     })
   },
 
