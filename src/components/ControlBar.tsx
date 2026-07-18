@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { paintCssPreview, paintNone } from '../style/paint'
 import { pathfinderTargetIds } from '../ops/paperUtils'
 import { useDocStore } from '../store/documentStore'
+import { ColorPicker } from './ColorPicker'
 import { Icon, IconButton } from './Icon'
 import { useTooltip } from './Tooltip'
 import { defaultStyle, defaultTextStyle, type Tool } from '../types'
@@ -439,12 +440,13 @@ export function ControlBar() {
             }}
           />
         </label>
-        <label className="field control-field">
+        <label className="field control-field control-field--color">
           BG
-          <input
-            type="color"
+          <ColorPicker
             value={doc.artboard.background ?? '#ffffff'}
-            onChange={(e) => setArtboardBackground(e.target.value)}
+            size="sm"
+            aria-label="Artboard background"
+            onChange={(hex) => setArtboardBackground(hex)}
           />
         </label>
         <label className="check check--icon" {...snapTip}>

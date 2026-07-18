@@ -6,6 +6,7 @@ import {
   paintSolid,
   type Paint,
 } from '../style/paint'
+import { ColorPicker } from './ColorPicker'
 import { IconButton } from './Icon'
 
 type Props = {
@@ -112,12 +113,11 @@ export function PaintControl({ label, paint, onChange, allowNone = true }: Props
           />
         </div>
         {mode === 'solid' && (
-          <input
-            type="color"
-            className="paint-control__color"
+          <ColorPicker
             value={solidColor}
             aria-label={`${label} color`}
-            onChange={(e) => onChange(paintSolid(e.target.value))}
+            size="sm"
+            onChange={(hex) => onChange(paintSolid(hex))}
           />
         )}
       </div>
@@ -126,11 +126,11 @@ export function PaintControl({ label, paint, onChange, allowNone = true }: Props
         <div className="paint-stops">
           {stops.map((stop, i) => (
             <div key={i} className="paint-stop-row">
-              <input
-                type="color"
+              <ColorPicker
                 value={stop.color}
-                onChange={(e) => updateStop(i, { color: e.target.value })}
+                size="sm"
                 aria-label={`${label} stop ${i + 1} color`}
+                onChange={(hex) => updateStop(i, { color: hex })}
               />
               <input
                 type="range"

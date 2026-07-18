@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import { PanelHeader } from './PanelHeader'
+import { ColorPicker } from './ColorPicker'
 import { useDocStore } from '../store/documentStore'
 import type { Paint } from '../style/paint'
+import { normalizeHex } from '../color/colorMath'
 
 /** Document swatch library — separate from Appearance. */
 export function SwatchesPanel() {
@@ -53,10 +55,7 @@ export function SwatchesPanel() {
   )
 }
 
-/**
- * Native color well only chooses a color. Penultimate owns "add to library"
- * via an explicit Add button — we can't hook macOS Color Panel swatch-add.
- */
+/** In-app picker + explicit Add — never opens the macOS Color Panel. */
 function AddSwatchControls({ seed }: { seed: string }) {
   const [draft, setDraft] = useState(seed)
 
@@ -64,27 +63,21 @@ function AddSwatchControls({ seed }: { seed: string }) {
     setDraft(seed)
   }, [seed])
 
-  const add = () => {
-    useDocStore.getState().addSwatch(draft)
-  }
-
   return (
     <div className="swatch-add-row">
-      <label className="swatch-add swatch-add--well" title="Pick a color">
-        <span className="swatch-add__well" style={{ background: draft }} aria-hidden />
-        <input
-          type="color"
-          aria-label="Pick a color"
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-        />
-      </label>
+      <ColorPicker
+        value={draft}
+        onChange={setDraft}
+        aria-label="Pick a color"
+        title="Pick a color"
+        size="sm"
+      />
       <button
         type="button"
         className="swatch-add__commit"
         title="Add color to Penultimate swatches"
         aria-label="Add color to swatches"
-        onClick={add}
+        onClick={() => useDocStore.getState().addSwatch(draft)}
       >
         Add
       </button>
@@ -93,23 +86,13 @@ function AddSwatchControls({ seed }: { seed: string }) {
 }
 
 function swatchSeedColor(fill: Paint, stroke: Paint): string {
-  if (fill.type === 'solid') return toHex6(fill.color)
+  if (fill.type === 'solid') return normalizeHex(fill.color) ?? '#808080'
   if (fill.type === 'linear' || fill.type === 'radial') {
-    return toHex6(fill.stops[0]?.color ?? '#ffffff')
+    return normalizeHex(fill.stops[0]?.color ?? '#ffffff') ?? '#ffffff'
   }
-  if (stroke.type === 'solid') return toHex6(stroke.color)
+  if (stroke.type === 'solid') return normalizeHex(stroke.color) ?? '#000000'
   if (stroke.type === 'linear' || stroke.type === 'radial') {
-    return toHex6(stroke.stops[0]?.color ?? '#000000')
-  }
-  return '#808080'
-}
-
-function toHex6(color: string): string {
-  const c = color.trim().toLowerCase()
-  if (/^#[0-9a-f]{6}$/.test(c)) return c
-  if (/^#[0-9a-f]{3}$/.test(c)) {
-    const [, r, g, b] = c
-    return `#${r}${r}${g}${g}${b}${b}`
+    return normalizeHex(stroke.stops[0]?.color ?? '#000000') ?? '#000000'
   }
   return '#808080'
 }
