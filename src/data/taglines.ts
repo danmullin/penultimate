@@ -32,8 +32,4 @@ export const TAGLINES: string[] = [
   'Now with 12% more “I’ll fix it in post”',
   'Synergizing paths since you opened the tab',
   'KPI: cute shapes shipped',
-
-  // Short sticky
-  'Penultimate means we meant it',
-  'Fewer tabs. More handles.',
 ]
