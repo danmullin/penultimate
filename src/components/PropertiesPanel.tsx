@@ -262,7 +262,7 @@ export function PropertiesPanel() {
                 </select>
               </label>
               <label className="field-inline">
-                <span>Rot°</span>
+                <span>Angle</span>
                 <input
                   type="number"
                   value={Math.round(primary.rotation)}
