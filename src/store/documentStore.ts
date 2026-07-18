@@ -120,6 +120,8 @@ type DocState = {
   setActiveArtboard: (id: string) => void
   addArtboard: () => void
   removeActiveArtboard: () => void
+  /** Delete objects that intersect the active artboard (undoable). */
+  clearActiveArtboard: () => void
 
   addNode: (node: VecNode) => void
   updateNode: (id: string, patch: Partial<VecNode>, recordHistory?: boolean) => void
@@ -412,6 +414,45 @@ export const useDocStore = create<DocState>((set, get) => ({
           activeArtboardId: artboards[0].id,
         }),
       }
+    })
+  },
+
+  clearActiveArtboard: () => {
+    const { doc } = get()
+    const ab =
+      doc.artboards.find((a) => a.id === doc.activeArtboardId) ??
+      doc.artboards[0]
+    if (!ab) return
+    const frame = { x: ab.x, y: ab.y, width: ab.width, height: ab.height }
+    const toDelete = new Set<string>()
+    for (const id of doc.zOrder) {
+      const n = doc.nodes[id]
+      if (!n) continue
+      const box = nodeBBox(n, doc)
+      const overlaps =
+        box.x < frame.x + frame.width &&
+        box.x + box.width > frame.x &&
+        box.y < frame.y + frame.height &&
+        box.y + box.height > frame.y
+      if (!overlaps) continue
+      for (const d of collectDescendants(id, doc)) toDelete.add(d)
+    }
+    if (toDelete.size === 0) return
+    get().pushHistory()
+    const nodes = { ...doc.nodes }
+    for (const id of toDelete) delete nodes[id]
+    set({
+      doc: {
+        ...doc,
+        nodes,
+        zOrder: doc.zOrder.filter((id) => !toDelete.has(id)),
+      },
+      selectedIds: [],
+      guides: [],
+      draftNode: null,
+      penDraft: null,
+      editingTextId: null,
+      shapeDialog: null,
     })
   },
 

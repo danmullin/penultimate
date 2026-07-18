@@ -147,6 +147,10 @@
     "items": [
       { "name": "Multi-artboard + size / background", "note": "Control bar" },
       {
+        "name": "Clear artboard",
+        "note": "Control bar — removes objects on the active artboard"
+      },
+      {
         "name": "Layers (visibility, lock, reorder, rename)",
         "note": "Layers panel — drag rows to reorder"
       },

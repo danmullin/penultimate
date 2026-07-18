@@ -61,6 +61,7 @@ export function ControlBar() {
   const setAspectLock = useDocStore((s) => s.setAspectLock)
   const addArtboard = useDocStore((s) => s.addArtboard)
   const removeActiveArtboard = useDocStore((s) => s.removeActiveArtboard)
+  const clearActiveArtboard = useDocStore((s) => s.clearActiveArtboard)
   const setActiveArtboard = useDocStore((s) => s.setActiveArtboard)
   const zoom = useDocStore((s) => s.zoom)
   const zoomBy = useDocStore((s) => s.zoomBy)
@@ -415,6 +416,13 @@ export function ControlBar() {
           label="Remove artboard"
           disabled={doc.artboards.length <= 1}
           onClick={() => removeActiveArtboard()}
+        />
+        <IconButton
+          icon="tool-path-eraser"
+          label="Clear artboard"
+          disabled={Object.keys(doc.nodes).length === 0}
+          danger
+          onClick={() => clearActiveArtboard()}
         />
         <label className="field control-field">
           Artboard W

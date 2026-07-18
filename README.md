@@ -166,6 +166,7 @@ That keeps the README and the in-app Help panel (`?` / `F1`) aligned.
 | Feature | Shortcut / notes |
 |---------|------------------|
 | Multi-artboard + size / background | Control bar |
+| Clear artboard | Control bar — removes objects on the active artboard |
 | Layers (visibility, lock, reorder, rename) | Layers panel — drag rows to reorder |
 | Rulers + manual guides | Drag from ruler onto canvas |
 | Soft-save / draft recovery | Silent IndexedDB draft — restores after tab close |
