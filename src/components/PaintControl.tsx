@@ -164,26 +164,28 @@ export function PaintControl({ label, paint, onChange, allowNone = true }: Props
                   aria-label={`${label} gradient angle`}
                 />
               </label>
-              <IconButton
-                icon="angle-h"
-                label="0° — horizontal"
-                onClick={() => onChange(linearPaintWithAngle(paint, 0))}
-              />
-              <IconButton
-                icon="angle-v"
-                label="90° — vertical"
-                onClick={() => onChange(linearPaintWithAngle(paint, 90))}
-              />
-              <IconButton
-                icon="angle-diag2"
-                label="45° — diagonal ↘"
-                onClick={() => onChange(linearPaintWithAngle(paint, 45))}
-              />
-              <IconButton
-                icon="angle-diag"
-                label="135° — diagonal ↙"
-                onClick={() => onChange(linearPaintWithAngle(paint, 135))}
-              />
+              <div className="paint-angles__presets">
+                <IconButton
+                  icon="angle-h"
+                  label="0° — horizontal"
+                  onClick={() => onChange(linearPaintWithAngle(paint, 0))}
+                />
+                <IconButton
+                  icon="angle-v"
+                  label="90° — vertical"
+                  onClick={() => onChange(linearPaintWithAngle(paint, 90))}
+                />
+                <IconButton
+                  icon="angle-diag2"
+                  label="45° — diagonal ↘"
+                  onClick={() => onChange(linearPaintWithAngle(paint, 45))}
+                />
+                <IconButton
+                  icon="angle-diag"
+                  label="135° — diagonal ↙"
+                  onClick={() => onChange(linearPaintWithAngle(paint, 135))}
+                />
+              </div>
             </div>
           )}
         </div>
