@@ -2827,6 +2827,14 @@ select {
   cursor: url('data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7') 0 0, none !important;
 }
 
+/* Hand tool / Space-pan: use OS grab so we are not dependent on a cursor SVG img. */
+.artboard-host.artboard-host--hand {
+  cursor: grab !important;
+}
+.artboard-host.artboard-host--hand-drag {
+  cursor: grabbing !important;
+}
+
 .artboard-host *,
 .artboard-host *::before,
 .artboard-host *::after {

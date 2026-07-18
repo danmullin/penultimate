@@ -37,10 +37,13 @@ export function ToolCursorOverlay({
   tool,
   hostRef,
   override,
+  hidden = false,
 }: {
   tool: Tool
   hostRef: RefObject<HTMLElement | null>
   override?: CursorName | null
+  /** Hide the custom cursor (e.g. hand uses OS grab). */
+  hidden?: boolean
 }) {
   const imgRef = useRef<HTMLImageElement>(null)
   const nameRef = useRef<CursorName>(cursorForTool(tool))
@@ -49,7 +52,7 @@ export function ToolCursorOverlay({
 
   useLayoutEffect(() => {
     nameRef.current = name
-    hotRef.current = HOTSPOT[name]
+    hotRef.current = HOTSPOT[name] ?? { x: 16, y: 16 }
     const img = imgRef.current
     if (img) img.src = assetUrl(`cursors/${name}.svg`)
   }, [name])
@@ -60,7 +63,7 @@ export function ToolCursorOverlay({
     if (!host || !img) return
 
     const place = (clientX: number, clientY: number) => {
-      const hot = hotRef.current
+      const hot = hotRef.current ?? { x: 16, y: 16 }
       img.style.transform = `translate3d(${clientX - hot.x}px, ${clientY - hot.y}px, 0)`
     }
 
@@ -68,6 +71,11 @@ export function ToolCursorOverlay({
       img.style.opacity = '0'
       // Park off-screen so a zero-opacity cursor can't create overflow/hit targets
       img.style.transform = 'translate3d(-100px, -100px, 0)'
+    }
+
+    if (hidden) {
+      hide()
+      return
     }
 
     const onMove = (e: PointerEvent) => {
@@ -101,7 +109,7 @@ export function ToolCursorOverlay({
       host.removeEventListener('pointerenter', onEnter)
       host.removeEventListener('pointerleave', hide)
     }
-  }, [hostRef])
+  }, [hostRef, hidden])
 
   return (
     <img
@@ -112,6 +120,7 @@ export function ToolCursorOverlay({
       width={32}
       height={32}
       draggable={false}
+      hidden={hidden}
     />
   )
 }
