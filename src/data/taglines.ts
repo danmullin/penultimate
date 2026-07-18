@@ -8,10 +8,8 @@ export const TAGLINES: string[] = [
   'The last pen you’ll need (until the next one)',
 
   // Same joke, new punchlines
-  'Finally, a last pen tool. Again.',
   'One last Bézier. We mean it this time.',
   'Closing the path on “just one more tool”',
-  'Last pen standing.',
 
   // Nerdy-cute
   'From M to Z, and every C in between',
@@ -32,4 +30,8 @@ export const TAGLINES: string[] = [
   'Now with 12% more “I’ll fix it in post”',
   'Synergizing paths since you opened the tab',
   'KPI: cute shapes shipped',
+
+  // Short sticky
+  'Penultimate means we meant it',
+  'Fewer tabs. More handles.',
 ]
