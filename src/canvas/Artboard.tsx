@@ -234,11 +234,6 @@ export function Artboard() {
     return { x: local.x, y: local.y }
   }
 
-  const gridLines = useMemo(() => {
-    // Visual artboard grid removed — snap-to-grid still uses gridSize.
-    return [] as Array<{ key: string; x1: number; y1: number; x2: number; y2: number }>
-  }, [])
-
   const onNodePointerDown = (id: string, e: ReactPointerEvent) => {
     window.getSelection()?.removeAllRanges()
     if (editingTextId) return
@@ -832,19 +827,6 @@ export function Artboard() {
             />
           </g>
         ))}
-        <g pointerEvents="none">
-          {gridLines.map((l) => (
-            <line
-              key={l.key}
-              x1={l.x1}
-              y1={l.y1}
-              x2={l.x2}
-              y2={l.y2}
-              stroke="var(--canvas-grid, rgba(255,255,255,0.06))"
-              strokeWidth={1}
-            />
-          ))}
-        </g>
         <g pointerEvents={isCreateTool(tool) ? 'none' : 'auto'}>
           {doc.zOrder.map((id) => {
             const node = doc.nodes[id]
