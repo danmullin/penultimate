@@ -27,6 +27,8 @@ jobs:
       - run: npm run build
         env:
           VITE_BASE: /penultimate/
+          # Public GA4 measurement ID for https://danmullin.github.io/penultimate/
+          VITE_GA_MEASUREMENT_ID: G-YW8PH0F8BN
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
