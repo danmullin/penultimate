@@ -1178,6 +1178,33 @@ select {
   border-top: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
 }
 
+.props-shadow-fields {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.35rem 0.4rem;
+  min-width: 0;
+}
+
+.field-inline--shadow {
+  min-width: 0;
+  gap: 0.25rem;
+}
+
+.field-inline--shadow > span {
+  min-width: 0;
+  font-size: 0.65rem;
+}
+
+.field-inline--shadow input[type='number'] {
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  flex: 1 1 auto;
+  box-sizing: border-box;
+  /* Room for native spin buttons so digits stay readable */
+  padding-inline-end: 1.15rem;
+}
+
 .props-hint {
   margin: 0;
   padding: 0.35rem 0.45rem;

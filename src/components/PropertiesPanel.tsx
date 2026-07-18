@@ -297,57 +297,57 @@ export function PropertiesPanel() {
                 }
               />
               <span className="props-tool-label">Shadow</span>
-              {primary.style.shadow?.enabled && (
-                <>
-                  <label className="field-inline field-inline--tiny">
-                    <span>X</span>
-                    <input
-                      type="number"
-                      value={primary.style.shadow.dx}
-                      onChange={(e) =>
-                        applyStyleToSelected({
-                          shadow: {
-                            ...primary.style.shadow,
-                            dx: Number(e.target.value) || 0,
-                          },
-                        })
-                      }
-                    />
-                  </label>
-                  <label className="field-inline field-inline--tiny">
-                    <span>Y</span>
-                    <input
-                      type="number"
-                      value={primary.style.shadow.dy}
-                      onChange={(e) =>
-                        applyStyleToSelected({
-                          shadow: {
-                            ...primary.style.shadow,
-                            dy: Number(e.target.value) || 0,
-                          },
-                        })
-                      }
-                    />
-                  </label>
-                  <label className="field-inline field-inline--tiny">
-                    <span>Blur</span>
-                    <input
-                      type="number"
-                      min={0}
-                      value={primary.style.shadow.blur}
-                      onChange={(e) =>
-                        applyStyleToSelected({
-                          shadow: {
-                            ...primary.style.shadow,
-                            blur: Math.max(0, Number(e.target.value) || 0),
-                          },
-                        })
-                      }
-                    />
-                  </label>
-                </>
-              )}
             </div>
+            {primary.style.shadow?.enabled && (
+              <div className="props-shadow-fields">
+                <label className="field-inline field-inline--shadow">
+                  <span>X</span>
+                  <input
+                    type="number"
+                    value={primary.style.shadow.dx}
+                    onChange={(e) =>
+                      applyStyleToSelected({
+                        shadow: {
+                          ...primary.style.shadow,
+                          dx: Number(e.target.value) || 0,
+                        },
+                      })
+                    }
+                  />
+                </label>
+                <label className="field-inline field-inline--shadow">
+                  <span>Y</span>
+                  <input
+                    type="number"
+                    value={primary.style.shadow.dy}
+                    onChange={(e) =>
+                      applyStyleToSelected({
+                        shadow: {
+                          ...primary.style.shadow,
+                          dy: Number(e.target.value) || 0,
+                        },
+                      })
+                    }
+                  />
+                </label>
+                <label className="field-inline field-inline--shadow">
+                  <span>Blur</span>
+                  <input
+                    type="number"
+                    min={0}
+                    value={primary.style.shadow.blur}
+                    onChange={(e) =>
+                      applyStyleToSelected({
+                        shadow: {
+                          ...primary.style.shadow,
+                          blur: Math.max(0, Number(e.target.value) || 0),
+                        },
+                      })
+                    }
+                  />
+                </label>
+              </div>
+            )}
           </Section>
 
           {primary.type === 'text' && !mixed && (
