@@ -53,8 +53,8 @@ export function ColorPicker({
     const place = () => {
       const r = wellRef.current!.getBoundingClientRect()
       const pad = 8
-      const width = 420
-      const height = 340
+      const width = 460
+      const height = 380
       let left = r.left
       let top = r.bottom + 6
       if (left + width > window.innerWidth - pad) left = window.innerWidth - width - pad
@@ -264,133 +264,30 @@ function ColorPopover({
             dragHue(e.clientY)
           }}
         >
-          <span className="color-popover__hue-tri color-popover__hue-tri--l" style={{ top: `${(hsv.h / 360) * 100}%` }} />
-          <span className="color-popover__hue-tri color-popover__hue-tri--r" style={{ top: `${(hsv.h / 360) * 100}%` }} />
+          <span
+            className="color-popover__hue-tri color-popover__hue-tri--l"
+            style={{ top: `${(hsv.h / 360) * 100}%` }}
+          />
+          <span
+            className="color-popover__hue-tri color-popover__hue-tri--r"
+            style={{ top: `${(hsv.h / 360) * 100}%` }}
+          />
         </div>
 
-        <div className="color-popover__side">
-          <div className="color-popover__compare">
-            <div className="color-popover__compare-stack">
-              <div className="color-popover__compare-block">
-                <span>new</span>
-                <div className="color-popover__compare-swatch" style={{ background: newHex }} />
-              </div>
-              <div className="color-popover__compare-block">
-                <span>current</span>
-                <div
-                  className="color-popover__compare-swatch"
-                  style={{ background: currentRef.current }}
-                  onClick={() => commitHex(currentRef.current)}
-                  title="Reset to current"
-                  role="button"
-                />
-              </div>
-            </div>
+        <div className="color-popover__compare-stack">
+          <div className="color-popover__compare-block">
+            <span>new</span>
+            <div className="color-popover__compare-swatch" style={{ background: newHex }} />
           </div>
-
-          <div className="color-popover__fields">
-            <fieldset className="color-popover__model">
-              <label className="color-popover__field">
-                <input type="radio" name="cp-model" checked readOnly aria-label="HSB hue mode" />
-                <span>H:</span>
-                <input
-                  type="number"
-                  min={0}
-                  max={360}
-                  value={hDeg}
-                  aria-label="Hue"
-                  onChange={(e) => commit({ ...hsvRef.current, h: Number(e.target.value) || 0 })}
-                />
-                <em>°</em>
-              </label>
-              <label className="color-popover__field">
-                <span className="color-popover__radio-spacer" />
-                <span>S:</span>
-                <input
-                  type="number"
-                  min={0}
-                  max={100}
-                  value={sPct}
-                  aria-label="Saturation"
-                  onChange={(e) =>
-                    commit({ ...hsvRef.current, s: (Number(e.target.value) || 0) / 100 })
-                  }
-                />
-                <em>%</em>
-              </label>
-              <label className="color-popover__field">
-                <span className="color-popover__radio-spacer" />
-                <span>B:</span>
-                <input
-                  type="number"
-                  min={0}
-                  max={100}
-                  value={bPct}
-                  aria-label="Brightness"
-                  onChange={(e) =>
-                    commit({ ...hsvRef.current, v: (Number(e.target.value) || 0) / 100 })
-                  }
-                />
-                <em>%</em>
-              </label>
-            </fieldset>
-
-            <fieldset className="color-popover__model">
-              <label className="color-popover__field">
-                <input type="radio" name="cp-model" disabled aria-hidden tabIndex={-1} />
-                <span>R:</span>
-                <input
-                  type="number"
-                  min={0}
-                  max={255}
-                  value={Math.round(rgb.r)}
-                  aria-label="Red"
-                  onChange={(e) => commitRgb(Number(e.target.value) || 0, rgb.g, rgb.b)}
-                />
-              </label>
-              <label className="color-popover__field">
-                <span className="color-popover__radio-spacer" />
-                <span>G:</span>
-                <input
-                  type="number"
-                  min={0}
-                  max={255}
-                  value={Math.round(rgb.g)}
-                  aria-label="Green"
-                  onChange={(e) => commitRgb(rgb.r, Number(e.target.value) || 0, rgb.b)}
-                />
-              </label>
-              <label className="color-popover__field">
-                <span className="color-popover__radio-spacer" />
-                <span>B:</span>
-                <input
-                  type="number"
-                  min={0}
-                  max={255}
-                  value={Math.round(rgb.b)}
-                  aria-label="Blue"
-                  onChange={(e) => commitRgb(rgb.r, rgb.g, Number(e.target.value) || 0)}
-                />
-              </label>
-            </fieldset>
-
-            <label className="color-popover__hex-row">
-              <span>#</span>
-              <input
-                value={hexDraft}
-                spellCheck={false}
-                aria-label="Hex color"
-                onChange={(e) => {
-                  const raw = e.target.value.replace(/[^0-9a-fA-F]/g, '').slice(0, 6)
-                  setHexDraft(raw)
-                  if (raw.length === 6) commitHex(`#${raw}`)
-                }}
-                onBlur={() => {
-                  const n = normalizeHex(`#${hexDraft}`)
-                  setHexDraft((n ?? newHex).replace(/^#/, ''))
-                }}
-              />
-            </label>
+          <div className="color-popover__compare-block">
+            <span>current</span>
+            <div
+              className="color-popover__compare-swatch"
+              style={{ background: currentRef.current }}
+              onClick={() => commitHex(currentRef.current)}
+              title="Reset to current"
+              role="button"
+            />
           </div>
         </div>
 
@@ -402,14 +299,115 @@ function ColorPopover({
             Cancel
           </button>
           {onAdd && (
-            <button
-              type="button"
-              className="color-popover__btn"
-              onClick={() => onAdd(newHex)}
-            >
+            <button type="button" className="color-popover__btn" onClick={() => onAdd(newHex)}>
               {addLabel}
             </button>
           )}
+        </div>
+
+        <div className="color-popover__fields">
+          <fieldset className="color-popover__model">
+            <label className="color-popover__field">
+              <input type="radio" name="cp-model" checked readOnly aria-label="HSB hue mode" />
+              <span>H:</span>
+              <input
+                type="number"
+                min={0}
+                max={360}
+                value={hDeg}
+                aria-label="Hue"
+                onChange={(e) => commit({ ...hsvRef.current, h: Number(e.target.value) || 0 })}
+              />
+              <em>°</em>
+            </label>
+            <label className="color-popover__field">
+              <span className="color-popover__radio-spacer" />
+              <span>S:</span>
+              <input
+                type="number"
+                min={0}
+                max={100}
+                value={sPct}
+                aria-label="Saturation"
+                onChange={(e) =>
+                  commit({ ...hsvRef.current, s: (Number(e.target.value) || 0) / 100 })
+                }
+              />
+              <em>%</em>
+            </label>
+            <label className="color-popover__field">
+              <span className="color-popover__radio-spacer" />
+              <span>B:</span>
+              <input
+                type="number"
+                min={0}
+                max={100}
+                value={bPct}
+                aria-label="Brightness"
+                onChange={(e) =>
+                  commit({ ...hsvRef.current, v: (Number(e.target.value) || 0) / 100 })
+                }
+              />
+              <em>%</em>
+            </label>
+          </fieldset>
+
+          <fieldset className="color-popover__model">
+            <label className="color-popover__field">
+              <input type="radio" name="cp-model" disabled aria-hidden tabIndex={-1} />
+              <span>R:</span>
+              <input
+                type="number"
+                min={0}
+                max={255}
+                value={Math.round(rgb.r)}
+                aria-label="Red"
+                onChange={(e) => commitRgb(Number(e.target.value) || 0, rgb.g, rgb.b)}
+              />
+            </label>
+            <label className="color-popover__field">
+              <span className="color-popover__radio-spacer" />
+              <span>G:</span>
+              <input
+                type="number"
+                min={0}
+                max={255}
+                value={Math.round(rgb.g)}
+                aria-label="Green"
+                onChange={(e) => commitRgb(rgb.r, Number(e.target.value) || 0, rgb.b)}
+              />
+            </label>
+            <label className="color-popover__field">
+              <span className="color-popover__radio-spacer" />
+              <span>B:</span>
+              <input
+                type="number"
+                min={0}
+                max={255}
+                value={Math.round(rgb.b)}
+                aria-label="Blue"
+                onChange={(e) => commitRgb(rgb.r, rgb.g, Number(e.target.value) || 0)}
+              />
+            </label>
+          </fieldset>
+
+          <label className="color-popover__hex-row">
+            <span>#</span>
+            <input
+              value={hexDraft}
+              spellCheck={false}
+              aria-label="Hex color"
+              onChange={(e) => {
+                const raw = e.target.value.replace(/[^0-9a-fA-F]/g, '').slice(0, 6)
+                setHexDraft(raw)
+                if (raw.length === 6) commitHex(`#${raw}`)
+              }}
+              onBlur={() => {
+                const n = normalizeHex(`#${hexDraft}`)
+                setHexDraft((n ?? newHex).replace(/^#/, ''))
+              }}
+            />
+          </label>
         </div>
       </div>
     </div>
