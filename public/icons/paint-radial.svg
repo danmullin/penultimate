@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <defs>
+    <radialGradient id="rg" cx="12" cy="12" r="7" gradientUnits="userSpaceOnUse">
+      <stop stop-color="currentColor" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="currentColor"/>
+    </radialGradient>
+  </defs>
+  <rect x="5" y="5" width="14" height="14" rx="1.5" fill="url(#rg)" stroke="currentColor" stroke-width="1.75"/>
+
+</svg>

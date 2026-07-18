@@ -1,0 +1,87 @@
+{
+  "select": {
+    "x": 5,
+    "y": 2,
+    "fallback": "default"
+  },
+  "direct": {
+    "x": 5,
+    "y": 2,
+    "fallback": "default"
+  },
+  "pen": {
+    "x": 4,
+    "y": 28,
+    "fallback": "crosshair"
+  },
+  "pen-add": {
+    "x": 4,
+    "y": 28,
+    "fallback": "crosshair"
+  },
+  "pen-remove": {
+    "x": 4,
+    "y": 28,
+    "fallback": "crosshair"
+  },
+  "pen-close": {
+    "x": 4,
+    "y": 28,
+    "fallback": "crosshair"
+  },
+  "pencil": {
+    "x": 4,
+    "y": 28,
+    "fallback": "crosshair"
+  },
+  "eyedropper": {
+    "x": 5,
+    "y": 28,
+    "fallback": "crosshair"
+  },
+  "text": {
+    "x": 16,
+    "y": 16,
+    "fallback": "text"
+  },
+  "line": {
+    "x": 16,
+    "y": 16,
+    "fallback": "crosshair"
+  },
+  "rect": {
+    "x": 16,
+    "y": 16,
+    "fallback": "crosshair"
+  },
+  "rounded-rect": {
+    "x": 16,
+    "y": 16,
+    "fallback": "crosshair"
+  },
+  "ellipse": {
+    "x": 16,
+    "y": 16,
+    "fallback": "crosshair"
+  },
+  "polygon": {
+    "x": 16,
+    "y": 16,
+    "fallback": "crosshair"
+  },
+  "star": {
+    "x": 16,
+    "y": 16,
+    "fallback": "crosshair"
+  },
+  "move": {
+    "x": 16,
+    "y": 16,
+    "fallback": "move"
+  },
+  "precision": {
+    "x": 16,
+    "y": 16,
+    "fallback": "crosshair"
+  }
+}

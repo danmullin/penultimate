@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Penultimate</title>
+    <script>
+      try {
+        var t = localStorage.getItem('penultimate-theme') || localStorage.getItem('anchor-mgmt-theme')
+        var ok = {
+          coffee: 1,
+          synthwave: 1,
+          illustrator: 1,
+          paper: 1,
+          nord: 1,
+          matcha: 1,
+          terminal: 1,
+          sunset: 1,
+          harbor: 1,
+          blush: 1,
+        }
+        document.documentElement.setAttribute('data-theme', ok[t] ? t : 'coffee')
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'coffee')
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
