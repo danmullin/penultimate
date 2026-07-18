@@ -111,10 +111,8 @@ export const TAGLINES: string[] = [
   // Short sticky
   'Penultimate means we meant it',
   'Fewer tabs. More handles.',
-  'Drag. Drop. Repeat.',
   'Fit artboard. Fit narrative.',
   'Make it kern.',
   'Less Comic Sans.',
   'Snap to baseline.',
-  'Export. Regret. Export.',
 ]
