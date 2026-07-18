@@ -265,7 +265,7 @@ function ColorPopover({
             onClick={async () => {
               try {
                 const ED = (
-                  window as Window & {
+                  window as unknown as {
                     EyeDropper: new () => { open: () => Promise<{ sRGBHex: string }> }
                   }
                 ).EyeDropper
