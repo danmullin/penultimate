@@ -17,7 +17,6 @@ export const TAGLINES: string[] = [
   'From M to Z, and every C in between',
   'Undo is forever. Commitment is Ctrl+S.',
   'Pathfinder of least resistance',
-  'SVG with benefits',
   'Point taken.',
   'Absolute unit of a toolbelt',
   'Boolean? I barely know her.',
