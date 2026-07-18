@@ -16,12 +16,16 @@ export const TAGLINES: string[] = [
   'Anchor management, rebranded',
   'Join endpoints, not meetings',
   'Smooth enough to lie about',
+  'Close the path. Keep the options.',
 
   // Tool jokes
   'Direct select your problems',
   'Eyedropper of truth',
   'Group therapy for overlapping shapes',
   'Layers so deep we need a map',
+  'Marquee like you mean it',
+  'Pen tool with commitment issues',
+  'Shear pressure. Emotional too.',
 
   // Nerdy-cute
   'Undo is forever. Commitment is Ctrl+S.',
@@ -34,6 +38,11 @@ export const TAGLINES: string[] = [
   'Make it, then make it again',
   'Soft save. Hard opinions.',
   'Still not Illustrator. On purpose.',
+  '1px stroke, infinite personality',
+  'Bounding box, unbound ambition',
+  'Hit Enter to finish. Or don’t.',
+  'Pink is a strategy.',
+  'No native color pickers were harmed',
 
   // Corporate satire (Anchor Management cousin)
   'Enterprise-grade doodling since just now',
@@ -46,8 +55,12 @@ export const TAGLINES: string[] = [
   'Ideating rectangles at scale',
   'Roadmap: more handles',
   'Stakeholder-approved curves',
+  'Syncing swatches across feelings',
+  'Non-blocking UI. Blocking opinions.',
 
   // Short sticky
   'Penultimate means we meant it',
   'Fewer tabs. More handles.',
+  'Drag. Drop. Repeat.',
+  'Fit artboard. Fit narrative.',
 ]
