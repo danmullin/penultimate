@@ -2067,12 +2067,6 @@ select {
   background: currentColor;
 }
 
-.i--tool-pen {
-  background:
-    linear-gradient(135deg, currentColor 0 55%, transparent 55%) 3px 1px / 8px 10px no-repeat,
-    linear-gradient(currentColor, currentColor) 2px 10px / 4px 3px no-repeat;
-}
-
 .i--tool-text {
   background:
     linear-gradient(currentColor, currentColor) 2px 1px / 10px 2px no-repeat,
