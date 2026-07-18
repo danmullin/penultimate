@@ -51,7 +51,14 @@
       { "name": "Outline mode", "shortcut": "` (backtick)" },
       { "name": "Show rulers", "note": "Preferences or View toolbar" },
       { "name": "Show grid / snap / smart guides", "note": "Preferences (Ctrl+, / Ctrl+K)" },
-      { "name": "Collapsible panels", "note": "Click Appearance / Layers headers" }
+      {
+        "name": "Collapsible panels",
+        "note": "Click Appearance / Layers / Swatches headers"
+      },
+      {
+        "name": "Movable dialogs",
+        "note": "Drag Preferences, Help, Color Picker, or shape dialogs by the title bar"
+      }
     ]
   },
   {
@@ -126,8 +133,12 @@
       },
       { "name": "Font picker ↑/↓", "note": "Arrow keys step fonts in list or search field" },
       {
+        "name": "Color picker",
+        "note": "In-app Photoshop-style picker (no OS color panel) — OK keeps · Cancel/Esc reverts · live preview while open"
+      },
+      {
         "name": "Swatch library",
-        "note": "Own dock panel — click fill · Shift+click stroke · + to add"
+        "note": "Own dock panel — click fill · Shift+click stroke · well opens picker · Add saves to library (stays open)"
       }
     ]
   },
@@ -147,6 +158,10 @@
       { "name": "Open / Save project", "note": "Menu bar (.vector.json)" },
       { "name": "Import SVG / Place image", "note": "Menu bar" },
       { "name": "Export SVG / PNG", "note": "Menu bar" },
+      {
+        "name": "UI themes",
+        "note": "Menu bar or Preferences — Coffee, Synthwave, Illustrator, Paper, Nord, …"
+      },
       { "name": "Preferences", "shortcut": "Ctrl+, / Ctrl+K" },
       { "name": "Keyboard shortcuts help", "shortcut": "F1 / ?" }
     ]

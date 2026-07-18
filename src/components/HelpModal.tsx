@@ -61,7 +61,8 @@ export function HelpModal() {
         <div className="settings-modal__body help-modal__body">
           <p className="help-modal__intro">
             <strong>Penultimate</strong> — handles worth dragging.{' '}
-            <kbd>Ctrl</kbd> is <kbd>Cmd</kbd> on macOS.
+            <kbd>Ctrl</kbd> is <kbd>Cmd</kbd> on macOS. Drag a dialog title bar to
+            move it.
           </p>
           {FEATURE_SECTIONS.map((section) => (
             <section key={section.title} className="settings-section">

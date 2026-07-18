@@ -182,14 +182,18 @@ export function SettingsModal() {
             <p className="settings-row__hint" style={{ margin: '0 0 0.5rem' }}>
               Soft-save keeps a local draft in this browser (IndexedDB). If the tab
               closes, Penultimate restores your artboard automatically on next open.
-              Use Save for a real <code>.vector.json</code> file.
+              Use <strong>Save</strong> for a real <code>.vector.json</code> file —
+              that includes artboards, layers, swatches, and manual guides.
             </p>
           </section>
 
           <section className="settings-section">
             <h3 className="settings-section__title">Appearance</h3>
             <label className="settings-row settings-row--field">
-              <span className="settings-row__label">UI theme</span>
+              <span className="settings-row__label">
+                UI theme
+                <span className="settings-row__hint">Also available in the menu bar</span>
+              </span>
               <select
                 value={theme}
                 aria-label="UI theme"
@@ -202,6 +206,10 @@ export function SettingsModal() {
                 ))}
               </select>
             </label>
+            <p className="settings-row__hint" style={{ margin: '0.35rem 0 0' }}>
+              Colors use an in-app picker (not the OS color panel). OK keeps the
+              preview; Cancel or Esc reverts.
+            </p>
           </section>
         </div>
 

@@ -104,7 +104,8 @@ That keeps the README and the in-app Help panel (`?` / `F1`) aligned.
 | Outline mode | ` (backtick) |
 | Show rulers | Preferences or View toolbar |
 | Show grid / snap / smart guides | Preferences (Ctrl+, / Ctrl+K) |
-| Collapsible panels | Click Appearance / Layers headers |
+| Collapsible panels | Click Appearance / Layers / Swatches headers |
+| Movable dialogs | Drag Preferences, Help, Color Picker, or shape dialogs by the title bar |
 
 ### Drawing
 
@@ -149,7 +150,7 @@ That keeps the README and the in-app Help panel (`?` / `F1`) aligned.
 
 | Feature | Notes |
 |---------|-------|
-| Default appearance | New shapes: white fill · black stroke · 1px |
+| Default appearance | Shapes: white fill · black stroke · 1px. Type: black fill · no stroke |
 | Shape geometry | Appearance → Shape — width/height, corners, polygon sides, star radii, line length |
 | Compact Appearance panel | Collapsible sections — Paint, Stroke, Object, Type |
 | Fill & stroke (solid / gradient / none) | Appearance panel |
@@ -157,7 +158,8 @@ That keeps the README and the in-app Help panel (`?` / `F1`) aligned.
 | Opacity, blend modes, drop shadow | Appearance panel |
 | Text style (font, size, bold, italic) | Appearance panel when text selected |
 | Font picker ↑/↓ | Arrow keys step fonts in list or search field |
-| Swatch library | Own dock panel — click fill · Shift+click stroke · + to add |
+| Color picker | In-app Photoshop-style picker (no OS color panel) — OK keeps · Cancel/Esc reverts · live preview while open |
+| Swatch library | Own dock panel — click fill · Shift+click stroke · well opens picker · Add saves to library (stays open) |
 
 ### Document
 
@@ -170,6 +172,7 @@ That keeps the README and the in-app Help panel (`?` / `F1`) aligned.
 | Open / Save project | Menu bar (.vector.json) |
 | Import SVG / Place image | Menu bar |
 | Export SVG / PNG | Menu bar |
+| UI themes | Menu bar or Preferences — Coffee, Synthwave, Illustrator, Paper, Nord, … |
 | Preferences | Ctrl+, / Ctrl+K |
 | Keyboard shortcuts help | F1 / ? |
 
@@ -177,4 +180,4 @@ In the app, open the same list from the **?** button in the menu bar (source: `s
 
 ## Project format
 
-`.vector.json` with `version: 1`, artboards, settings, `nodes` map, and top-level `zOrder`.
+`.vector.json` with `version: 1`, artboards, settings, `nodes` map, top-level `zOrder`, document `swatches`, and `manualGuides`.
