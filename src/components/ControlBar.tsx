@@ -418,7 +418,7 @@ export function ControlBar() {
           onClick={() => removeActiveArtboard()}
         />
         <IconButton
-          icon="tool-path-eraser"
+          icon="clear-artboard"
           label="Clear artboard"
           disabled={Object.keys(doc.nodes).length === 0}
           danger
