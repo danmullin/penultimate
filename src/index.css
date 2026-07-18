@@ -2833,20 +2833,6 @@ select {
   cursor: inherit !important;
 }
 
-/* Hand / Space-pan: real OS cursors (override the hidden custom-cursor stack). */
-.artboard-host.artboard-host--hand,
-.artboard-host.artboard-host--hand *,
-.artboard-host.artboard-host--hand *::before,
-.artboard-host.artboard-host--hand *::after {
-  cursor: grab !important;
-}
-.artboard-host.artboard-host--hand-drag,
-.artboard-host.artboard-host--hand-drag *,
-.artboard-host.artboard-host--hand-drag *::before,
-.artboard-host.artboard-host--hand-drag *::after {
-  cursor: grabbing !important;
-}
-
 /* Selection chrome: show OS double-arrow / move / grab cursors */
 .artboard-host .sel-move {
   cursor: move !important;

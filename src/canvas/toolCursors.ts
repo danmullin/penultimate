@@ -55,17 +55,17 @@ const HOTSPOTS: Record<CursorName, Hotspot> = {
   'hand-closed': { x: 16, y: 16, fallback: 'grabbing' },
 }
 
-/** Inlined so Hand never depends on a public SVG fetch (and stays high-contrast on paper). */
+/** Windows-style white hand + black outline (locked — OS grab inverts on light/dark). */
 const HAND_OPEN_DATA =
   'data:image/svg+xml,' +
   encodeURIComponent(
-    '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><g fill="#111" stroke="#fff" stroke-width="1.3" stroke-linejoin="round"><rect x="9.2" y="4.2" width="3.1" height="11.8" rx="1.55"/><rect x="12.9" y="2.6" width="3.1" height="13.4" rx="1.55"/><rect x="16.6" y="3.4" width="3.1" height="12.6" rx="1.55"/><rect x="20.3" y="5.6" width="3.1" height="10.4" rx="1.55"/><path d="M8.4 14.8h15.8v6.2c0 3.1-2.4 5.5-5.6 5.5h-4.6c-3.2 0-5.6-2.4-5.6-5.5v-6.2z"/><rect x="4.6" y="13.4" width="6.4" height="3.1" rx="1.55" transform="rotate(-32 7.8 15)"/></g></svg>',
+    '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><g fill="#fff" stroke="#111" stroke-width="1.35" stroke-linejoin="round"><rect x="9.2" y="4.2" width="3.1" height="11.8" rx="1.55"/><rect x="12.9" y="2.6" width="3.1" height="13.4" rx="1.55"/><rect x="16.6" y="3.4" width="3.1" height="12.6" rx="1.55"/><rect x="20.3" y="5.6" width="3.1" height="10.4" rx="1.55"/><path d="M8.4 14.8h15.8v6.2c0 3.1-2.4 5.5-5.6 5.5h-4.6c-3.2 0-5.6-2.4-5.6-5.5v-6.2z"/><rect x="4.6" y="13.4" width="6.4" height="3.1" rx="1.55" transform="rotate(-32 7.8 15)"/></g></svg>',
   )
 
 const HAND_CLOSED_DATA =
   'data:image/svg+xml,' +
   encodeURIComponent(
-    '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><g fill="#111" stroke="#fff" stroke-width="1.3" stroke-linejoin="round"><path d="M8.8 13.6c0-1.3 1-2.3 2.3-2.3h12c1.3 0 2.3 1 2.3 2.3v6.4c0 3.1-2.3 5.4-5.4 5.4h-6c-3 0-5.2-2.3-5.2-5.4v-6.4z"/><rect x="9.6" y="9.6" width="3" height="4.4" rx="1.5"/><rect x="13.2" y="8.6" width="3" height="5.4" rx="1.5"/><rect x="16.8" y="8.2" width="3" height="5.8" rx="1.5"/><rect x="20.4" y="9" width="3" height="5" rx="1.5"/><rect x="5.4" y="14.2" width="5.2" height="3" rx="1.5" transform="rotate(-38 8 15.7)"/></g></svg>',
+    '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><g fill="#fff" stroke="#111" stroke-width="1.35" stroke-linejoin="round"><path d="M8.8 13.6c0-1.3 1-2.3 2.3-2.3h12c1.3 0 2.3 1 2.3 2.3v6.4c0 3.1-2.3 5.4-5.4 5.4h-6c-3 0-5.2-2.3-5.2-5.4v-6.4z"/><rect x="9.6" y="9.6" width="3" height="4.4" rx="1.5"/><rect x="13.2" y="8.6" width="3" height="5.4" rx="1.5"/><rect x="16.8" y="8.2" width="3" height="5.8" rx="1.5"/><rect x="20.4" y="9" width="3" height="5" rx="1.5"/><rect x="5.4" y="14.2" width="5.2" height="3" rx="1.5" transform="rotate(-38 8 15.7)"/></g></svg>',
   )
 
 const TOOL_CURSOR: Record<Tool, CursorName> = {
