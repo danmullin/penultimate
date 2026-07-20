@@ -3,11 +3,13 @@ import { ColorPicker } from './ColorPicker'
 import { IconButton } from './Icon'
 import { normalizeHex } from '../color/colorMath'
 import { useDocStore } from '../store/documentStore'
-import type { ChromaKey, ImageNode } from '../types'
+import type { ChromaKey, ChromaKeyEntry, ImageNode } from '../types'
 
 type Props = {
   node: ImageNode
 }
+
+const emptyChroma = (): ChromaKey => ({ enabled: false, entries: [] })
 
 export function ImageChromaSection({ node }: Props) {
   const applyImageChromaKey = useDocStore((s) => s.applyImageChromaKey)
@@ -16,7 +18,7 @@ export function ImageChromaSection({ node }: Props) {
   const pushHistory = useDocStore((s) => s.pushHistory)
   const [busy, setBusy] = useState(false)
 
-  const chroma = node.chromaKey ?? { enabled: false, colors: [] }
+  const chroma = node.chromaKey ?? emptyChroma()
   const picking = chromaColorPickId === node.id
 
   const commit = async (next: ChromaKey, recordHistory = true) => {
@@ -36,22 +38,36 @@ export function ImageChromaSection({ node }: Props) {
   }
 
   const addColor = (raw: string) => {
-    const hex = normalizeHex(raw)
-    if (!hex || chroma.colors.includes(hex)) return
+    const color = normalizeHex(raw)
+    if (!color || chroma.entries.some((e) => e.color === color)) return
     void commit({
       enabled: true,
-      colors: [...chroma.colors, hex],
+      entries: [...chroma.entries, { color, tolerance: 0 }],
       sourceHref: node.chromaKey?.sourceHref,
     })
   }
 
-  const removeColor = (hex: string) => {
+  const removeEntry = (color: string) => {
     pushHistory()
-    const colors = chroma.colors.filter((c) => c !== hex)
+    const entries = chroma.entries.filter((e) => e.color !== color)
     void commit(
       {
-        enabled: chroma.enabled && colors.length > 0,
-        colors,
+        enabled: chroma.enabled && entries.length > 0,
+        entries,
+        sourceHref: node.chromaKey?.sourceHref,
+      },
+      false,
+    )
+  }
+
+  const setTolerance = (color: string, tolerance: number) => {
+    const entries = chroma.entries.map((e) =>
+      e.color === color ? { ...e, tolerance: Math.max(0, Math.min(128, Math.round(tolerance))) } : e,
+    )
+    void commit(
+      {
+        ...chroma,
+        entries,
         sourceHref: node.chromaKey?.sourceHref,
       },
       false,
@@ -77,39 +93,41 @@ export function ImageChromaSection({ node }: Props) {
           icon="effect-blur"
           label="Toggle remove color"
           active={chroma.enabled}
-          disabled={busy || chroma.colors.length === 0}
+          disabled={busy || chroma.entries.length === 0}
           onClick={toggleEnabled}
         />
         <span className="props-tool-label">Remove color</span>
       </div>
 
       <p className="props-hint props-hint--tight">
-        Exact hex matches become transparent. Add fringe greens as separate swatches.
+        Each swatch removes matching pixels. Raise tolerance to catch fringe shades.
       </p>
 
       <div className="chroma-colors">
-        <div className="chroma-colors__grid">
-          {chroma.colors.map((c) => (
-            <button
-              key={c}
-              type="button"
-              className="chroma-colors__chip"
-              style={{ background: c }}
-              title={`${c} — click to remove`}
-              disabled={busy}
-              onClick={() => removeColor(c)}
-            />
-          ))}
+        {chroma.entries.length > 0 && (
+          <ul className="chroma-list">
+            {chroma.entries.map((entry) => (
+              <ChromaEntryRow
+                key={entry.color}
+                entry={entry}
+                busy={busy}
+                onRemove={() => removeEntry(entry.color)}
+                onToleranceStart={() => pushHistory()}
+                onToleranceChange={(tol) => setTolerance(entry.color, tol)}
+              />
+            ))}
+          </ul>
+        )}
+
+        <div className="chroma-colors__actions">
           <ColorPicker
-            value={chroma.colors[chroma.colors.length - 1] ?? '#00ff00'}
+            value={chroma.entries[chroma.entries.length - 1]?.color ?? '#00ff00'}
             onChange={() => {}}
             onAdd={addColor}
             addLabel="Add"
             size="sm"
             aria-label="Add remove-color swatch"
           />
-        </div>
-        <div className="chroma-colors__actions">
           <IconButton
             icon="tool-eyedropper"
             label={picking ? 'Stop picking colors from image' : 'Pick color from image'}
@@ -118,10 +136,52 @@ export function ImageChromaSection({ node }: Props) {
             onClick={togglePick}
           />
           {picking ? (
-            <span className="chroma-colors__pick-hint">Click the image or selection box</span>
+            <span className="chroma-colors__pick-hint">Eyedropper — click the image</span>
           ) : null}
         </div>
       </div>
     </>
+  )
+}
+
+function ChromaEntryRow({
+  entry,
+  busy,
+  onRemove,
+  onToleranceStart,
+  onToleranceChange,
+}: {
+  entry: ChromaKeyEntry
+  busy: boolean
+  onRemove: () => void
+  onToleranceStart: () => void
+  onToleranceChange: (tolerance: number) => void
+}) {
+  return (
+    <li className="chroma-row">
+      <button
+        type="button"
+        className="chroma-colors__chip"
+        style={{ background: entry.color }}
+        title={`${entry.color} — remove`}
+        disabled={busy}
+        onClick={onRemove}
+      />
+      <label className="chroma-row__tol field-inline">
+        <span>Tolerance</span>
+        <input
+          type="range"
+          min={0}
+          max={128}
+          step={1}
+          value={entry.tolerance}
+          disabled={busy}
+          aria-label={`Tolerance for ${entry.color}`}
+          onMouseDown={onToleranceStart}
+          onChange={(e) => onToleranceChange(Number(e.target.value))}
+        />
+        <em className="field-inline__val">{entry.tolerance}</em>
+      </label>
+    </li>
   )
 }

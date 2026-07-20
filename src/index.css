@@ -1226,11 +1226,35 @@ select {
   margin-top: 0.45rem;
 }
 
-.chroma-colors__grid {
+.chroma-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.chroma-row {
+  display: grid;
+  grid-template-columns: 1.35rem minmax(0, 1fr);
   align-items: center;
+  gap: 0.45rem;
+}
+
+.chroma-row__tol {
+  min-width: 0;
   gap: 0.35rem;
+}
+
+.chroma-row__tol > span {
+  font-size: 0.62rem;
+  min-width: 3.2rem;
+}
+
+.chroma-row__tol input[type='range'] {
+  flex: 1;
+  min-width: 0;
 }
 
 .chroma-colors__chip {

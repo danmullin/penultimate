@@ -1,5 +1,5 @@
-import { normalizeHex, rgbToHex } from '../color/colorMath'
-import type { ChromaKey, ImageNode } from '../types'
+import { hexToRgb, normalizeHex, rgbToHex } from '../color/colorMath'
+import type { ChromaKey, ChromaKeyEntry, ImageNode } from '../types'
 
 function loadImage(href: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
@@ -16,12 +16,29 @@ export function imageSourceHref(node: ImageNode): string {
   return node.chromaKey?.sourceHref ?? node.href
 }
 
-/** Apply exact hex matches — matching RGB pixels become fully transparent. */
-export async function applyChromaKey(href: string, colors: string[]): Promise<string> {
-  const targets = new Set(
-    colors.map(normalizeHex).filter((c): c is string => c !== null),
-  )
-  if (targets.size === 0) return href
+function pixelMatchesEntry(
+  r: number,
+  g: number,
+  b: number,
+  entry: ChromaKeyEntry,
+): boolean {
+  const target = hexToRgb(entry.color)
+  if (!target) return false
+  const tol = Math.max(0, entry.tolerance)
+  if (tol <= 0) return rgbToHex(r, g, b) === normalizeHex(entry.color)
+  const dr = r - target.r
+  const dg = g - target.g
+  const db = b - target.b
+  return dr * dr + dg * dg + db * db <= tol * tol
+}
+
+/** Remove pixels within each entry's RGB tolerance. */
+export async function applyChromaKey(
+  href: string,
+  entries: ChromaKeyEntry[],
+): Promise<string> {
+  const valid = entries.filter((e) => normalizeHex(e.color))
+  if (valid.length === 0) return href
 
   const img = await loadImage(href)
   const canvas = document.createElement('canvas')
@@ -34,8 +51,10 @@ export async function applyChromaKey(href: string, colors: string[]): Promise<st
   const data = ctx.getImageData(0, 0, canvas.width, canvas.height)
   const px = data.data
   for (let i = 0; i < px.length; i += 4) {
-    const hex = rgbToHex(px[i]!, px[i + 1]!, px[i + 2]!)
-    if (targets.has(hex)) px[i + 3] = 0
+    const r = px[i]!
+    const g = px[i + 1]!
+    const b = px[i + 2]!
+    if (valid.some((entry) => pixelMatchesEntry(r, g, b, entry))) px[i + 3] = 0
   }
   ctx.putImageData(data, 0, 0)
   return canvas.toDataURL('image/png')
@@ -114,6 +133,6 @@ export async function resolveImageHref(
   sourceHref: string,
   chromaKey: ChromaKey | undefined,
 ): Promise<string> {
-  if (!chromaKey?.enabled || chromaKey.colors.length === 0) return sourceHref
-  return applyChromaKey(sourceHref, chromaKey.colors)
+  if (!chromaKey?.enabled || chromaKey.entries.length === 0) return sourceHref
+  return applyChromaKey(sourceHref, chromaKey.entries)
 }

@@ -139,7 +139,7 @@
       { "name": "Opacity, blend modes, drop shadow", "note": "Appearance panel" },
       {
         "name": "Remove color (chroma key)",
-        "note": "Appearance → Image — exact hex matches, multiple swatches, pick from image"
+        "note": "Appearance → Image — per-color tolerance, eyedropper pick"
       },
       {
         "name": "Text style (font, size, bold, italic)",

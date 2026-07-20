@@ -36,10 +36,13 @@ export function ToolCursorOverlay({
   tool,
   hostRef,
   override,
+  allowSelectionChrome = false,
 }: {
   tool: Tool
   hostRef: RefObject<HTMLElement | null>
   override?: CursorName | null
+  /** Keep the tool cursor visible over selection move/rotate chrome (chroma pick). */
+  allowSelectionChrome?: boolean
 }) {
   const imgRef = useRef<HTMLImageElement>(null)
   const nameRef = useRef<CursorName>(cursorForTool(tool))
@@ -82,6 +85,7 @@ export function ToolCursorOverlay({
 
     const onMove = (e: PointerEvent) => {
       const overChrome =
+        !allowSelectionChrome &&
         e.target instanceof Element &&
         Boolean(e.target.closest('.sel-handle, .sel-move, .sel-rotate'))
       if (overChrome) {
@@ -93,6 +97,7 @@ export function ToolCursorOverlay({
     }
     const onEnter = (e: PointerEvent) => {
       const overChrome =
+        !allowSelectionChrome &&
         e.target instanceof Element &&
         Boolean(e.target.closest('.sel-handle, .sel-move, .sel-rotate'))
       if (overChrome) {
@@ -111,7 +116,7 @@ export function ToolCursorOverlay({
       host.removeEventListener('pointerenter', onEnter)
       host.removeEventListener('pointerleave', hide)
     }
-  }, [hostRef])
+  }, [hostRef, allowSelectionChrome])
 
   return (
     <img

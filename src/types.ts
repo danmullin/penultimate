@@ -156,11 +156,17 @@ export type PathNode = NodeBase & {
   primitive?: ShapePrimitive
 }
 
-/** Exact-match color removal for placed rasters (chroma key). */
+/** One keyed color plus RGB distance tolerance (0 = exact hex). */
+export type ChromaKeyEntry = {
+  color: string
+  /** Max Euclidean RGB distance; 0 = exact match only. */
+  tolerance: number
+}
+
+/** Color removal for placed rasters (chroma key). */
 export type ChromaKey = {
   enabled: boolean
-  /** Normalized #rrggbb values — pixels matching any entry become transparent. */
-  colors: string[]
+  entries: ChromaKeyEntry[]
   /** Unprocessed raster; omitted until chroma key is first used. */
   sourceHref?: string
 }
@@ -405,21 +411,48 @@ function normalizeBlendMode(raw: unknown): BlendMode {
     : 'normal'
 }
 
+export function normalizeChromaKeyEntry(raw: unknown): ChromaKeyEntry | null {
+  if (typeof raw === 'string') {
+    const color = normalizeHex(raw)
+    return color ? { color, tolerance: 0 } : null
+  }
+  if (!raw || typeof raw !== 'object') return null
+  const e = raw as Record<string, unknown>
+  const color = typeof e.color === 'string' ? normalizeHex(e.color) : null
+  if (!color) return null
+  const tolerance =
+    typeof e.tolerance === 'number' && Number.isFinite(e.tolerance)
+      ? Math.max(0, Math.min(128, Math.round(e.tolerance)))
+      : 0
+  return { color, tolerance }
+}
+
 export function normalizeChromaKey(raw: unknown): ChromaKey | undefined {
   if (!raw || typeof raw !== 'object') return undefined
   const c = raw as Record<string, unknown>
-  const colors = Array.isArray(c.colors)
-    ? c.colors
-        .filter((v): v is string => typeof v === 'string')
-        .map((v) => normalizeHex(v))
-        .filter((v): v is string => v !== null)
-    : []
-  const unique = [...new Set(colors)]
+
+  const parsed: ChromaKeyEntry[] = []
+  if (Array.isArray(c.entries)) {
+    for (const item of c.entries) {
+      const entry = normalizeChromaKeyEntry(item)
+      if (entry) parsed.push(entry)
+    }
+  } else if (Array.isArray(c.colors)) {
+    for (const item of c.colors) {
+      const entry = normalizeChromaKeyEntry(item)
+      if (entry) parsed.push(entry)
+    }
+  }
+
+  const byColor = new Map<string, ChromaKeyEntry>()
+  for (const entry of parsed) byColor.set(entry.color, entry)
+  const entries = [...byColor.values()]
+
   const sourceHref = typeof c.sourceHref === 'string' && c.sourceHref ? c.sourceHref : undefined
-  if (!c.enabled && unique.length === 0 && !sourceHref) return undefined
+  if (!c.enabled && entries.length === 0 && !sourceHref) return undefined
   return {
     enabled: Boolean(c.enabled),
-    colors: unique,
+    entries,
     sourceHref,
   }
 }

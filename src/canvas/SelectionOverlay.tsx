@@ -333,7 +333,6 @@ export function SelectionOverlay({
           strokeWidth={stroke}
           strokeDasharray={`${4 / scale} ${4 / scale}`}
           pointerEvents={overlayInteractive ? 'all' : 'none'}
-          style={chromaPickActive ? { cursor: 'crosshair' } : undefined}
           onPointerDown={overlayInteractive ? onSelectionPointerDown : undefined}
           onDoubleClick={
             soleTextId

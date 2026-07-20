@@ -892,14 +892,17 @@ export function Artboard() {
       <ToolCursorOverlay
         tool={tool}
         hostRef={hostRef}
+        allowSelectionChrome={Boolean(chromaColorPickId)}
         override={
-          handDragging
-            ? 'hand-closed'
-            : handMode
-              ? 'hand'
-              : penClose
-                ? 'pen-close'
-                : null
+          chromaColorPickId
+            ? 'eyedropper'
+            : handDragging
+              ? 'hand-closed'
+              : handMode
+                ? 'hand'
+                : penClose
+                  ? 'pen-close'
+                  : null
         }
       />
       <svg

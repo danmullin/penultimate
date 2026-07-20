@@ -1184,7 +1184,7 @@ export const useDocStore = create<DocState>((set, get) => ({
     const sourceHref = normalized?.sourceHref ?? node.chromaKey?.sourceHref ?? node.href
     const nextKey: ChromaKey = {
       enabled: normalized?.enabled ?? false,
-      colors: normalized?.colors ?? [],
+      entries: normalized?.entries ?? [],
       sourceHref,
     }
 
@@ -1192,7 +1192,7 @@ export const useDocStore = create<DocState>((set, get) => ({
 
     const href = await resolveImageHref(sourceHref, nextKey)
     const storedKey =
-      nextKey.enabled || nextKey.colors.length > 0 || nextKey.sourceHref
+      nextKey.enabled || nextKey.entries.length > 0 || nextKey.sourceHref
         ? nextKey
         : undefined
 
@@ -1229,12 +1229,16 @@ export const useDocStore = create<DocState>((set, get) => ({
     if (!hex) return
 
     const prev = node.chromaKey
-    const colors = prev?.colors.includes(hex) ? prev.colors : [...(prev?.colors ?? []), hex]
+    const entries = prev?.entries ?? []
+    const exists = entries.some((e) => e.color === hex)
+    const nextEntries = exists
+      ? entries
+      : [...entries, { color: hex, tolerance: 0 }]
     await get().applyImageChromaKey(
       id,
       {
         enabled: true,
-        colors,
+        entries: nextEntries,
         sourceHref: prev?.sourceHref ?? source,
       },
       true,
