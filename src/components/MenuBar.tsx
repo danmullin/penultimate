@@ -88,10 +88,8 @@ export function MenuBar() {
               const active =
                 store.doc.artboards.find((a) => a.id === store.doc.activeArtboardId) ??
                 store.doc.artboards[0]
-              const maxW = Math.min(img.width, (active?.width ?? 800) * 0.6)
-              const scale = maxW / img.width
-              const w = Math.round(img.width * scale)
-              const h = Math.round(img.height * scale)
+              const w = img.width
+              const h = img.height
               store.addNode({
                 id: nextId('image'),
                 type: 'image',

@@ -74,7 +74,7 @@ function geomOpen(node: VecNode, paint: PaintSlice): string {
     case 'path':
       return `<path d="${esc(node.d)}" ${a}${node.rotation ? transformAttr(node, 0, 0) : ''} />`
     case 'image':
-      return `<image href="${esc(node.href)}" x="${node.x}" y="${node.y}" width="${node.width}" height="${node.height}" preserveAspectRatio="none"${transformAttr(node, node.x + node.width / 2, node.y + node.height / 2)} />`
+      return `<image href="${esc(node.href)}" x="${node.x}" y="${node.y}" width="${node.width}" height="${node.height}" preserveAspectRatio="xMidYMid meet"${transformAttr(node, node.x + node.width / 2, node.y + node.height / 2)} />`
     case 'group':
       return ''
   }

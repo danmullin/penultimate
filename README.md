@@ -173,7 +173,7 @@ That keeps the README and the in-app Help panel (`?` / `F1`) aligned.
 | Rulers + manual guides | Drag from ruler onto canvas |
 | Soft-save / draft recovery | Silent IndexedDB draft — restores after tab close |
 | Open / Save project | Menu bar (.vector.json) |
-| Import SVG / Place image | Menu bar |
+| Import SVG / Place image | Menu bar — place image at native pixel size |
 | Export SVG / PNG | Menu bar |
 | UI themes | Menu bar or Preferences — Coffee, Synthwave, Illustrator, Paper, Nord, … |
 | Preferences | Ctrl+, / Ctrl+K |

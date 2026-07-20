@@ -195,7 +195,7 @@ function geometry(
           width={node.width}
           height={node.height}
           opacity={undefined}
-          preserveAspectRatio="none"
+          preserveAspectRatio="xMidYMid meet"
           transform={rotationProps(
             node,
             node.x + node.width / 2,
@@ -281,7 +281,7 @@ function PaintedShape({
           y={node.y}
           width={node.width}
           height={node.height}
-          preserveAspectRatio="none"
+          preserveAspectRatio="xMidYMid meet"
           transform={rotationProps(
             node,
             node.x + node.width / 2,
