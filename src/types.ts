@@ -8,7 +8,6 @@ import {
   normalizeStrokeAlign,
   type StrokeAlign,
 } from './style/strokeAlign'
-import { normalizeHex } from './color/colorMath'
 
 export type { Paint, GradientStop } from './style/paint'
 export type { StrokeAlign } from './style/strokeAlign'
@@ -156,30 +155,14 @@ export type PathNode = NodeBase & {
   primitive?: ShapePrimitive
 }
 
-/** One keyed color plus RGB distance tolerance (0 = exact hex). */
-export type ChromaKeyEntry = {
-  color: string
-  /** Max Euclidean RGB distance; 0 = exact match only. */
-  tolerance: number
-}
-
-/** Color removal for placed rasters (chroma key). */
-export type ChromaKey = {
-  enabled: boolean
-  entries: ChromaKeyEntry[]
-  /** Unprocessed raster; omitted until chroma key is first used. */
-  sourceHref?: string
-}
-
 export type ImageNode = NodeBase & {
   type: 'image'
   x: number
   y: number
   width: number
   height: number
-  /** Data URL or absolute/blob URL for the raster (may include chroma key). */
+  /** Data URL or absolute/blob URL for the raster. */
   href: string
-  chromaKey?: ChromaKey
 }
 
 export type GroupNode = NodeBase & {
@@ -411,52 +394,6 @@ function normalizeBlendMode(raw: unknown): BlendMode {
     : 'normal'
 }
 
-export function normalizeChromaKeyEntry(raw: unknown): ChromaKeyEntry | null {
-  if (typeof raw === 'string') {
-    const color = normalizeHex(raw)
-    return color ? { color, tolerance: 0 } : null
-  }
-  if (!raw || typeof raw !== 'object') return null
-  const e = raw as Record<string, unknown>
-  const color = typeof e.color === 'string' ? normalizeHex(e.color) : null
-  if (!color) return null
-  const tolerance =
-    typeof e.tolerance === 'number' && Number.isFinite(e.tolerance)
-      ? Math.max(0, Math.min(128, Math.round(e.tolerance)))
-      : 0
-  return { color, tolerance }
-}
-
-export function normalizeChromaKey(raw: unknown): ChromaKey | undefined {
-  if (!raw || typeof raw !== 'object') return undefined
-  const c = raw as Record<string, unknown>
-
-  const parsed: ChromaKeyEntry[] = []
-  if (Array.isArray(c.entries)) {
-    for (const item of c.entries) {
-      const entry = normalizeChromaKeyEntry(item)
-      if (entry) parsed.push(entry)
-    }
-  } else if (Array.isArray(c.colors)) {
-    for (const item of c.colors) {
-      const entry = normalizeChromaKeyEntry(item)
-      if (entry) parsed.push(entry)
-    }
-  }
-
-  const byColor = new Map<string, ChromaKeyEntry>()
-  for (const entry of parsed) byColor.set(entry.color, entry)
-  const entries = [...byColor.values()]
-
-  const sourceHref = typeof c.sourceHref === 'string' && c.sourceHref ? c.sourceHref : undefined
-  if (!c.enabled && entries.length === 0 && !sourceHref) return undefined
-  return {
-    enabled: Boolean(c.enabled),
-    entries,
-    sourceHref,
-  }
-}
-
 function normalizeShadow(raw: unknown): DropShadow {
   const base = { ...DEFAULT_SHADOW }
   if (!raw || typeof raw !== 'object') return base
@@ -504,14 +441,12 @@ export function normalizeNode(node: VecNode): VecNode {
     }
   }
   if (node.type === 'image') {
-    const chromaKey = normalizeChromaKey(node.chromaKey)
     return {
       ...node,
       style,
       width: Math.max(1, node.width),
       height: Math.max(1, node.height),
       href: typeof node.href === 'string' ? node.href : '',
-      chromaKey,
     }
   }
   if (node.type === 'group') {

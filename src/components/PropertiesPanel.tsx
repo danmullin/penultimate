@@ -4,7 +4,6 @@ import { FontSelect } from './FontSelect'
 import { IconButton } from './Icon'
 import { PanelHeader } from './PanelHeader'
 import { hasEditableGeometry, ShapeGeometryFields } from './ShapeGeometryFields'
-import { ImageChromaSection } from './ImageChromaSection'
 import { useDocStore } from '../store/documentStore'
 import type { Paint } from '../style/paint'
 import { supportsStrokeAlign, type StrokeAlign } from '../style/strokeAlign'
@@ -350,12 +349,6 @@ export function PropertiesPanel() {
               </div>
             )}
           </Section>
-
-          {primary.type === 'image' && !mixed && (
-            <Section title="Image">
-              <ImageChromaSection node={primary} />
-            </Section>
-          )}
 
           {primary.type === 'text' && !mixed && (
             <Section title="Type">

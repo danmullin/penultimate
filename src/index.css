@@ -1219,69 +1219,6 @@ select {
   margin-top: 0.35rem;
 }
 
-.chroma-colors {
-  display: flex;
-  flex-direction: column;
-  gap: 0.45rem;
-  margin-top: 0.45rem;
-}
-
-.chroma-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-}
-
-.chroma-row {
-  display: grid;
-  grid-template-columns: 1.35rem minmax(0, 1fr);
-  align-items: center;
-  gap: 0.45rem;
-}
-
-.chroma-row__tol {
-  min-width: 0;
-  gap: 0.35rem;
-}
-
-.chroma-row__tol > span {
-  font-size: 0.62rem;
-  min-width: 3.2rem;
-}
-
-.chroma-row__tol input[type='range'] {
-  flex: 1;
-  min-width: 0;
-}
-
-.chroma-colors__chip {
-  width: 1.35rem;
-  height: 1.35rem;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  cursor: pointer;
-  padding: 0;
-}
-
-.chroma-colors__chip:hover {
-  outline: 2px solid color-mix(in srgb, var(--accent) 55%, transparent);
-}
-
-.chroma-colors__actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.35rem;
-}
-
-.chroma-colors__pick-hint {
-  font-size: 0.68rem;
-  color: var(--text-dim);
-}
-
 .paint-control {
   margin-bottom: 1rem;
   padding-bottom: 0.85rem;
