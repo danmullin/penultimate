@@ -118,7 +118,7 @@ export function ImageChromaSection({ node }: Props) {
             onClick={togglePick}
           />
           {picking ? (
-            <span className="chroma-colors__pick-hint">Click the image to sample</span>
+            <span className="chroma-colors__pick-hint">Click the image or selection box</span>
           ) : null}
         </div>
       </div>

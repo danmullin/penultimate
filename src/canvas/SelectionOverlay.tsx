@@ -61,6 +61,8 @@ export function SelectionOverlay({
   const doc = useDocStore((s) => s.doc)
   const selectedIds = useDocStore((s) => s.selectedIds)
   const tool = useDocStore((s) => s.tool)
+  const chromaColorPickId = useDocStore((s) => s.chromaColorPickId)
+  const pickChromaColorAt = useDocStore((s) => s.pickChromaColorAt)
   const spaceHand = useDocStore((s) => s.spaceHand)
   const aspectLock = useDocStore((s) => s.aspectLock)
   const pushHistory = useDocStore((s) => s.pushHistory)
@@ -293,9 +295,29 @@ export function SelectionOverlay({
   const soleTextId =
     soleText?.type === 'text' && !soleText.locked ? soleText.id : null
   const typeTool = tool === 'text' || tool === 'area-text'
+  const chromaPickActive =
+    Boolean(chromaColorPickId) &&
+    selectedIds.length === 1 &&
+    selectedIds[0] === chromaColorPickId &&
+    doc.nodes[chromaColorPickId!]?.type === 'image'
   // Type tool: selection chrome is visual-only so clicks hit the text and enter edit.
   // Also non-interactive briefly after selection so dblclick reaches the node.
   const passClicksThrough = !interactive || typeTool
+
+  const onSelectionPointerDown = (e: ReactPointerEvent) => {
+    if (chromaPickActive && chromaColorPickId) {
+      e.stopPropagation()
+      const svg = ownerSvg(e.currentTarget)
+      if (!svg) return
+      const local = svgLocalFromClient(e.clientX, e.clientY, svg)
+      if (!local) return
+      void pickChromaColorAt(chromaColorPickId, local.x, local.y)
+      return
+    }
+    onMoveDown(e)
+  }
+
+  const overlayInteractive = chromaPickActive || (!passClicksThrough && !typeTool)
 
   return (
     <g>
@@ -310,8 +332,9 @@ export function SelectionOverlay({
           stroke="#c4a484"
           strokeWidth={stroke}
           strokeDasharray={`${4 / scale} ${4 / scale}`}
-          pointerEvents={passClicksThrough ? 'none' : 'all'}
-          onPointerDown={passClicksThrough ? undefined : onMoveDown}
+          pointerEvents={overlayInteractive ? 'all' : 'none'}
+          style={chromaPickActive ? { cursor: 'crosshair' } : undefined}
+          onPointerDown={overlayInteractive ? onSelectionPointerDown : undefined}
           onDoubleClick={
             soleTextId
               ? (e) => {
@@ -334,7 +357,7 @@ export function SelectionOverlay({
             stroke="#c4a484"
             strokeWidth={stroke}
             style={{ cursor: h.cursor }}
-            pointerEvents={passClicksThrough ? 'none' : 'all'}
+            pointerEvents={chromaPickActive || passClicksThrough ? 'none' : 'all'}
             onPointerDown={onHandleDown(h.kind)}
           />
         ))}
@@ -356,7 +379,7 @@ export function SelectionOverlay({
         r={hs / 1.5}
         fill="#e0b87a"
         style={{ cursor: rotating ? 'grabbing' : 'grab' }}
-        pointerEvents={passClicksThrough ? 'none' : 'all'}
+        pointerEvents={chromaPickActive || passClicksThrough ? 'none' : 'all'}
         onPointerDown={onHandleDown('rotate')}
       />
     </g>
