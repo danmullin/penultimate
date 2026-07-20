@@ -138,6 +138,10 @@
       { "name": "Stroke width, cap, join, dash, arrow, align", "note": "Appearance panel" },
       { "name": "Opacity, blend modes, drop shadow", "note": "Appearance panel" },
       {
+        "name": "Remove color (chroma key)",
+        "note": "Appearance → Image — exact hex matches, multiple swatches, pick from image"
+      },
+      {
         "name": "Text style (font, size, bold, italic)",
         "note": "Appearance panel when text selected"
       },

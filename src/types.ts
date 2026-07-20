@@ -8,6 +8,7 @@ import {
   normalizeStrokeAlign,
   type StrokeAlign,
 } from './style/strokeAlign'
+import { normalizeHex } from './color/colorMath'
 
 export type { Paint, GradientStop } from './style/paint'
 export type { StrokeAlign } from './style/strokeAlign'
@@ -155,14 +156,24 @@ export type PathNode = NodeBase & {
   primitive?: ShapePrimitive
 }
 
+/** Exact-match color removal for placed rasters (chroma key). */
+export type ChromaKey = {
+  enabled: boolean
+  /** Normalized #rrggbb values — pixels matching any entry become transparent. */
+  colors: string[]
+  /** Unprocessed raster; omitted until chroma key is first used. */
+  sourceHref?: string
+}
+
 export type ImageNode = NodeBase & {
   type: 'image'
   x: number
   y: number
   width: number
   height: number
-  /** Data URL or absolute/blob URL for the raster. */
+  /** Data URL or absolute/blob URL for the raster (may include chroma key). */
   href: string
+  chromaKey?: ChromaKey
 }
 
 export type GroupNode = NodeBase & {
@@ -394,6 +405,25 @@ function normalizeBlendMode(raw: unknown): BlendMode {
     : 'normal'
 }
 
+export function normalizeChromaKey(raw: unknown): ChromaKey | undefined {
+  if (!raw || typeof raw !== 'object') return undefined
+  const c = raw as Record<string, unknown>
+  const colors = Array.isArray(c.colors)
+    ? c.colors
+        .filter((v): v is string => typeof v === 'string')
+        .map((v) => normalizeHex(v))
+        .filter((v): v is string => v !== null)
+    : []
+  const unique = [...new Set(colors)]
+  const sourceHref = typeof c.sourceHref === 'string' && c.sourceHref ? c.sourceHref : undefined
+  if (!c.enabled && unique.length === 0 && !sourceHref) return undefined
+  return {
+    enabled: Boolean(c.enabled),
+    colors: unique,
+    sourceHref,
+  }
+}
+
 function normalizeShadow(raw: unknown): DropShadow {
   const base = { ...DEFAULT_SHADOW }
   if (!raw || typeof raw !== 'object') return base
@@ -441,12 +471,14 @@ export function normalizeNode(node: VecNode): VecNode {
     }
   }
   if (node.type === 'image') {
+    const chromaKey = normalizeChromaKey(node.chromaKey)
     return {
       ...node,
       style,
       width: Math.max(1, node.width),
       height: Math.max(1, node.height),
       href: typeof node.href === 'string' ? node.href : '',
+      chromaKey,
     }
   }
   if (node.type === 'group') {

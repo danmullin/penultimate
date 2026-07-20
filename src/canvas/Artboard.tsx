@@ -37,6 +37,8 @@ export function Artboard() {
   const pushHistory = useDocStore((s) => s.pushHistory)
   const setGuides = useDocStore((s) => s.setGuides)
   const sampleStyleFromNode = useDocStore((s) => s.sampleStyleFromNode)
+  const chromaColorPickId = useDocStore((s) => s.chromaColorPickId)
+  const pickChromaColorAt = useDocStore((s) => s.pickChromaColorAt)
   const outlineMode = useDocStore((s) => s.outlineMode)
   const setActiveArtboard = useDocStore((s) => s.setActiveArtboard)
   const scissorsAt = useDocStore((s) => s.scissorsAt)
@@ -327,6 +329,15 @@ export function Artboard() {
       const factor = e.altKey || e.shiftKey ? 1 / 1.5 : 1.5
       zoomAtClient(e.clientX, e.clientY, zoomRef.current * factor)
       return
+    }
+    if (chromaColorPickId && id === chromaColorPickId) {
+      const n = doc.nodes[id]
+      if (n?.type === 'image') {
+        e.stopPropagation()
+        const { x, y } = toLocal(e)
+        void pickChromaColorAt(id, x, y)
+        return
+      }
     }
     if (tool === 'eyedropper') {
       e.stopPropagation()

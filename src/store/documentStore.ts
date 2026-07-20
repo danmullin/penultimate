@@ -29,13 +29,21 @@ import {
   createEmptyDocument,
   defaultStyle,
   defaultTextStyle,
+  normalizeChromaKey,
   syncArtboardFromActive,
   type ArtboardFrame,
+  type ChromaKey,
   type SnapGuide,
   type Tool,
   type VecNode,
   type VectorDocument,
 } from '../types'
+import {
+  docPointToImageLocal,
+  imageSourceHref,
+  resolveImageHref,
+  sampleImagePixelHex,
+} from '../image/chromaKey'
 
 const MAX_HISTORY = 50
 
@@ -88,6 +96,8 @@ type DocState = {
   editingTextId: string | null
   /** Last soft-save timestamp (ms), null until first write. */
   autosaveAt: number | null
+  /** When set, clicking the image samples a pixel into its chroma-key list. */
+  chromaColorPickId: string | null
 
   setTool: (tool: Tool) => void
   setSpaceHand: (on: boolean) => void
@@ -111,6 +121,7 @@ type DocState = {
   ) => void
   setEditingTextId: (id: string | null) => void
   setAutosaveAt: (at: number | null) => void
+  setChromaColorPickId: (id: string | null) => void
 
   pushHistory: () => void
   undo: () => void
@@ -185,6 +196,13 @@ type DocState = {
   addSwatches: (colors: string[]) => void
   removeSwatch: (color: string) => void
   applySwatch: (color: string, target: 'fill' | 'stroke') => void
+
+  applyImageChromaKey: (
+    id: string,
+    chromaKey: ChromaKey,
+    recordHistory?: boolean,
+  ) => Promise<void>
+  pickChromaColorAt: (id: string, docX: number, docY: number) => Promise<void>
 
   beginPen: () => void
   addPenPoint: (x: number, y: number, control?: { cx: number; cy: number }) => void
@@ -273,6 +291,7 @@ export const useDocStore = create<DocState>((set, get) => ({
   shapeDialog: null,
   editingTextId: null,
   autosaveAt: null,
+  chromaColorPickId: null,
 
   setTool: (tool) => set({ tool, penDraft: tool === 'pen' ? { points: [] } : null }),
   setSpaceHand: (on) => set({ spaceHand: on }),
@@ -303,16 +322,26 @@ export const useDocStore = create<DocState>((set, get) => ({
   setShapeDialog: (shapeDialog) => set({ shapeDialog }),
   setEditingTextId: (editingTextId) => set({ editingTextId }),
   setAutosaveAt: (autosaveAt) => set({ autosaveAt }),
+  setChromaColorPickId: (chromaColorPickId) => set({ chromaColorPickId }),
 
   select: (ids, additive = false) => {
     set((s) => {
-      if (!additive) return { selectedIds: ids }
+      const chromaColorPickId =
+        s.chromaColorPickId && ids.includes(s.chromaColorPickId) ? s.chromaColorPickId : null
+      if (!additive) return { selectedIds: ids, chromaColorPickId }
       const next = new Set(s.selectedIds)
       for (const id of ids) {
         if (next.has(id)) next.delete(id)
         else next.add(id)
       }
-      return { selectedIds: [...next] }
+      const selectedIds = [...next]
+      return {
+        selectedIds,
+        chromaColorPickId:
+          chromaColorPickId && selectedIds.includes(chromaColorPickId)
+            ? chromaColorPickId
+            : null,
+      }
     })
   },
 
@@ -1147,6 +1176,71 @@ export const useDocStore = create<DocState>((set, get) => ({
     else get().applyStyleToSelected({ stroke: paint })
   },
 
+  applyImageChromaKey: async (id, chromaKey, recordHistory = true) => {
+    const node = get().doc.nodes[id]
+    if (!node || node.type !== 'image') return
+
+    const normalized = normalizeChromaKey(chromaKey)
+    const sourceHref = normalized?.sourceHref ?? node.chromaKey?.sourceHref ?? node.href
+    const nextKey: ChromaKey = {
+      enabled: normalized?.enabled ?? false,
+      colors: normalized?.colors ?? [],
+      sourceHref,
+    }
+
+    if (recordHistory) get().pushHistory()
+
+    const href = await resolveImageHref(sourceHref, nextKey)
+    const storedKey =
+      nextKey.enabled || nextKey.colors.length > 0 || nextKey.sourceHref
+        ? nextKey
+        : undefined
+
+    set((s) => {
+      const prev = s.doc.nodes[id]
+      if (!prev || prev.type !== 'image') return s
+      return {
+        doc: {
+          ...s.doc,
+          nodes: {
+            ...s.doc.nodes,
+            [id]: { ...prev, href, chromaKey: storedKey },
+          },
+        },
+      }
+    })
+  },
+
+  pickChromaColorAt: async (id, docX, docY) => {
+    const node = get().doc.nodes[id]
+    if (!node || node.type !== 'image') return
+
+    const local = docPointToImageLocal(node, docX, docY)
+    if (!local) return
+
+    const source = imageSourceHref(node)
+    const hex = await sampleImagePixelHex(
+      source,
+      local.x,
+      local.y,
+      node.width,
+      node.height,
+    )
+    if (!hex) return
+
+    const prev = node.chromaKey
+    const colors = prev?.colors.includes(hex) ? prev.colors : [...(prev?.colors ?? []), hex]
+    await get().applyImageChromaKey(
+      id,
+      {
+        enabled: true,
+        colors,
+        sourceHref: prev?.sourceHref ?? source,
+      },
+      true,
+    )
+  },
+
   loadDocument: (doc) =>
     set({
       doc: syncArtboardFromActive({
@@ -1171,6 +1265,7 @@ export const useDocStore = create<DocState>((set, get) => ({
       future: [],
       tool: 'select',
       editingTextId: null,
+      chromaColorPickId: null,
     }),
 
   getDocument: () => get().doc,

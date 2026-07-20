@@ -158,6 +158,7 @@ That keeps the README and the in-app Help panel (`?` / `F1`) aligned.
 | Fill & stroke (solid / gradient / none) | Appearance panel |
 | Stroke width, cap, join, dash, arrow, align | Appearance panel |
 | Opacity, blend modes, drop shadow | Appearance panel |
+| Remove color (chroma key) | Appearance → Image — exact hex matches, multiple swatches, pick from image |
 | Text style (font, size, bold, italic) | Appearance panel when text selected |
 | Font picker ↑/↓ | Arrow keys step fonts in list or search field |
 | Color picker | In-app Photoshop-style picker (no OS color panel) — OK keeps · Cancel/Esc reverts · live preview while open |

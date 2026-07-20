@@ -1215,6 +1215,49 @@ select {
   line-height: 1.35;
 }
 
+.props-hint--tight {
+  margin-top: 0.35rem;
+}
+
+.chroma-colors {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-top: 0.45rem;
+}
+
+.chroma-colors__grid {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.chroma-colors__chip {
+  width: 1.35rem;
+  height: 1.35rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.chroma-colors__chip:hover {
+  outline: 2px solid color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+.chroma-colors__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.chroma-colors__pick-hint {
+  font-size: 0.68rem;
+  color: var(--text-dim);
+}
+
 .paint-control {
   margin-bottom: 1rem;
   padding-bottom: 0.85rem;
